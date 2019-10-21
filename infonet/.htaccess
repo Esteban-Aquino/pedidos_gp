@@ -1,0 +1,9 @@
+RewriteEngine on
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+Rewriterule ^invoices$ invoices.php
+Rewriterule ^payment$ payment.php
+Rewriterule ^reverse$ reverse.php
+Rewriterule ^invoices/$ invoices.php
+Rewriterule ^payment/$ payment.php
+Rewriterule ^reverse/$ reverse.php
