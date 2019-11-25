@@ -1,0 +1,11 @@
+RewriteEngine on
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+Rewriterule ^validar$ validarUsuario.php
+Rewriterule ^getdatoscliente$ getdatoscliente.php
+Rewriterule ^getCondicionVenta$ getCondicionVenta.php
+Rewriterule ^listarCondicionesVentas$ listarCondicionesVentas.php
+Rewriterule ^listarMonedas$ listarMonedas.php
+
+
+

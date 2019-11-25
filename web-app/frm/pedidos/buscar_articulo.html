@@ -1,0 +1,62 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><small> Artiulos</small></h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form id="form-buscar">
+                    <input type="hidden" id="pagina" name="pagina" value="1"/>
+                    <div class="row">
+                        <div class="col col-md-1">
+                            <label class="form-control-static">Buscar</label>
+                        </div>
+                        <div class="col col-md-10">
+                            <input id="buscar_texto" name="buscar_texto" type="text"
+                                   onkeyup="BuscarCobradorNombreAjax()"
+                                   class="form-control input-sm">
+                        </div>
+                        <div class="col col-md-1">
+                            <button id="boton-buscar" 
+                                    type="button"
+                                    onclick="BuscarCobradorNombreAjax()" 
+                                    class="btn btn-sm btn-primary">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-55">
+                        <div class="thumbnail centrado">
+                            <div class="image view view-first">
+                                <img style="width: 90%; display: block;" src="articulos/WET3149.jpg" alt="image" />
+                            </div>
+                            <div class="caption">
+                                <p><b id="COD_ARTICULO_PRE">WET3149</b></p>
+                                <p id="DESC_ARTICULO_PRE">Champion super feo</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-55">
+                        <div class="thumbnail centrado">
+                            <div class="image view view-first">
+                                <img style="width: 90%; display: block;" src="articulos/WET3149.jpg" alt="image" />
+                            </div>
+                            <div class="caption">
+                                <p><b id="COD_ARTICULO_PRE">WET3149</b></p>
+                                <p id="DESC_ARTICULO_PRE">Champion super feo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="centrado">
+                <button onclick="salir_busqueda()" class="btn btn-primary btn-sm">
+                    <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Salir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
