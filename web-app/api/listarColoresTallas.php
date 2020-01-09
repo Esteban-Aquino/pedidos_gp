@@ -1,8 +1,8 @@
 <?php
 
     /**
-    * Lista condiciones de ventas
-    * Esteban Aquino 25-11-2019
+    * Lista colores
+    * Esteban Aquino 04-12-2019
     */
     require_once '../config/operacionesDB.php';
     require_once 'sharedFunctions.php';
@@ -16,15 +16,18 @@
     }     
     if ($ok) {
         
-        $cod_moneda = NVL($_POST["COD_MONEDA"], "");
+        $cod_articulo = NVL($_GET["COD_ARTICULO"], "");
+        $cod_color = NVL($_POST["COD_COLOR"], "");
+        $cod_talla = NVL($_POST["COD_TALLA"], "");
         $busqueda = NVL($_POST["buscar_texto"], "");
         $pag = NVL($_POST["pagina"], 1);
-        if ($cod_moneda==="" || $cod_moneda===null) {
+        //print($cod_articulo);
+        if (($cod_color==="" || $cod_color===null) || ($cod_talla==="" || $cod_talla===null)) {
            //print("asdasd");
-           $datos = operacionesDB::ListarMonedas($cod_moneda, $busqueda, $pag); 
+           $datos = operacionesDB::ListarColoresTallas($busqueda, $pag, $cod_articulo); 
         }else{
-           
-           $datos = operacionesDB::DatosMonedas($cod_moneda);
+            //print("DSADSA");
+           //$datos = operacionesDB::DatosDireccion($cod_cliente, $cod_direccion);
         }
 
         $respuesta["acceso"] = true;

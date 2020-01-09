@@ -69,3 +69,8 @@ tfoot>tr {
     height: 35px !important;
     cursor: pointer;
 }
+
+#es_oferta {
+    color: red !important;
+    font-weight: bold !important;
+}

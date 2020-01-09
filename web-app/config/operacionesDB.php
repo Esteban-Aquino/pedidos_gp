@@ -285,7 +285,14 @@ class operacionesDB {
                                 AND ROWNUM=1)) RUC,
                                 CC.COD_CONDICION_VENTA,
                                 NVL(CC.COD_MONEDA_LIMITE,'1') COD_MONEDA,
-                                NVL(CC.TIP_DOCUMENTO,bs_busca_parametro('CC','WEB_PLAZO_DOC')) TIP_DOCUMENTO
+                                NVL(CC.TIP_DOCUMENTO,
+                                NVL((SELECT C.COD_FORMA_PAGO
+                                      FROM cc_plazo_documento C
+                                      JOIN CC_FORMAS_PAGO F
+                                        ON C.COD_FORMA_PAGO = F.COD_FORMA_PAGO
+                                     WHERE C.COD_CONDICION_VENTA = CC.COD_CONDICION_VENTA
+                                       AND ROWNUM = 1),
+                                    bs_busca_parametro('CC', 'WEB_PLAZO_DOC'))) TIP_DOCUMENTO
                         from ident_personas a
                              join cc_clientes cc
                              on cc.cod_persona = a.cod_persona
@@ -305,6 +312,92 @@ class operacionesDB {
             $comando->execute([':DOCUMENTO' => $documento,
                 ':COD_CLIENTE' => $cod_cliente,
                 ':DOCUMENTO1' => $documento]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Valida Trae datos de cliente
+     *
+     * @param Documento y codigo de cliente
+     * @return Datos de cliente
+     */
+    public static function ListarCliente($busqueda, $pag) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "select dsa.COD_CLIENTE,
+                        dsa.COD_PERSONA,
+                        dsa.DESC_CLIENTE,
+                        dsa.DESC_DIRECCION,
+                        dsa.TEL_CLIENTE,
+                        dsa.RUC,
+                        dsa.COD_CONDICION_VENTA,
+                        dsa.COD_MONEDA,
+                        dsa.TIP_DOCUMENTO
+                   from (select asd.*, rownum r
+                           from (select cc.COD_CLIENTE,
+                                        CC.COD_PERSONA,
+                                        initcap(p.nombre) DESC_CLIENTE,
+                                        nvl(trim(bsf_direcciones(p.cod_persona)),
+                                            'Sin Definir') DESC_DIRECCION,
+                                        nvl(trim(bsf_telefonos(p.cod_persona)), 'Sin Definir') TEL_CLIENTE,
+                                        NVL((SELECT I.NUMERO
+                                              FROM IDENT_PERSONAS I
+                                             WHERE CC.COD_PERSONA = I.COD_PERSONA
+                                               AND I.COD_IDENT = 'RUC'
+                                               AND ROWNUM = 1),
+                                            (SELECT I.NUMERO
+                                               FROM IDENT_PERSONAS I
+                                              WHERE CC.COD_PERSONA = I.COD_PERSONA
+                                                AND I.COD_IDENT = 'CI'
+                                                AND ROWNUM = 1)) RUC,
+                                        CC.COD_CONDICION_VENTA,
+                                        NVL(CC.COD_MONEDA_LIMITE, '1') COD_MONEDA,
+                                        NVL(CC.TIP_DOCUMENTO,
+                                            NVL((SELECT C.COD_FORMA_PAGO
+                                                  FROM cc_plazo_documento C
+                                                  JOIN CC_FORMAS_PAGO F
+                                                    ON C.COD_FORMA_PAGO = F.COD_FORMA_PAGO
+                                                 WHERE C.COD_CONDICION_VENTA =
+                                                       CC.COD_CONDICION_VENTA
+                                                   AND ROWNUM = 1),
+                                                bs_busca_parametro('CC', 'WEB_PLAZO_DOC'))) TIP_DOCUMENTO
+                                   from cc_clientes cc
+                                   join personas p
+                                     on cc.cod_persona = p.cod_persona
+                                  where (CC.COD_CLIENTE like
+                                        upper('%' || trim(:busqueda1) || '%') OR
+                                        P.NOMBRE like upper('%' || trim(:busqueda2) || '%') OR
+                                        NVL((SELECT I.NUMERO
+                                               FROM IDENT_PERSONAS I
+                                              WHERE CC.COD_PERSONA = I.COD_PERSONA
+                                                AND I.COD_IDENT = 'RUC'
+                                                AND ROWNUM = 1),
+                                             (SELECT I.NUMERO
+                                                FROM IDENT_PERSONAS I
+                                               WHERE CC.COD_PERSONA = I.COD_PERSONA
+                                                 AND I.COD_IDENT = 'CI'
+                                                 AND ROWNUM = 1)) like
+                                        upper('%' || trim(:busqueda3) || '%'))
+                                    and nvl(cc.estado, 'X') <> 'I'
+                                    and rownum <= ({$pag} * {$cant})
+
+                                 ) asd) dsa
+                  where r >= ({$pag}  + ({$pag}  * {$cant}) - ({$cant} + {$pag} ) + 1)";
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':busqueda1' => $busqueda,
+                ':busqueda2' => $busqueda,
+                ':busqueda3' => $busqueda]);
 
             $result = $comando->fetchAll(PDO::FETCH_ASSOC);
 
@@ -377,7 +470,82 @@ class operacionesDB {
 
             // Ejecutar sentencia preparada
             $comando->execute([':busqueda' => $busqueda,
-                               ':busqueda1' => $busqueda]);
+                ':busqueda1' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trae datos de monedas
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function DatosMonedas($cod_moneda) {
+        try {
+            $cant = 10;
+            $consulta = "select descripcion, cod_moneda, round(tipo_cambio_dia) tip_cambio, nvl( decimales, 0 ) decimales, siglas
+                         from monedas
+                         where cod_moneda in ('1','2')
+                         and cod_moneda = :cod_moneda";
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':cod_moneda' => $cod_moneda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trae datos de monedas
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function ListarMonedas($cod_moneda, $busqueda, $pag) {
+        try {
+            $cant = 10;
+            //print_r($pag);
+            $consulta = "select dsa.descripcion,
+                        dsa.cod_moneda,
+                        round(dsa.tipo_cambio_dia) tip_cambio,
+                        dsa.decimales,
+                        dsa.siglas
+                   from (select asd.*, rownum r
+                           from (select descripcion,
+                                        cod_moneda,
+                                        tipo_cambio_dia,
+                                        nvl(decimales, 0) decimales,
+                                        siglas
+                                   from monedas
+                                  where (instr(upper(descripcion), upper(:busqueda)) > 0 or
+                                        instr(upper(cod_moneda), upper(:busqueda1)) > 0
+                                        or :busqueda2 is null)
+                                    and cod_moneda in ('1', '2')) asd) dsa
+                  where r between ({$pag} + ({$pag} * {$cant}) - ({$cant} + {$pag}) + 1) and
+                        ({$pag} + ({$pag}  * {$cant}) - ({$cant} + {$pag} ) + {$cant})";
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda,
+                ':busqueda2' => $busqueda]);
 
             $result = $comando->fetchAll(PDO::FETCH_ASSOC);
 
@@ -394,38 +562,22 @@ class operacionesDB {
      * @param $pag Pagina actual, $busqueda Texto buscado
      * @return Lista de condiciones de venta
      */
-    public static function ListarMonedas($cod_moneda, $busqueda, $pag) {
+    public static function DatosTiposDocumentos($COD_CONDICION_VENTA, $COD_FORMA_PAGO) {
         try {
             $cant = 10;
-            $consulta = "select dsa.descripcion, 
-                        dsa.cod_moneda, 
-                        round(dsa.tipo_cambio_dia) tip_cambio, 
-                        dsa.decimales, 
-                        dsa.siglas
-                   from (select asd.*, rownum r
-                           from (
-                           select descripcion, cod_moneda, tipo_cambio_dia, nvl( decimales, 0 ) decimales, siglas
-                           from monedas
-                           where (cod_moneda = :cod_moneda)
-                           or (instr(upper(descripcion), upper(:busqueda)) > 0
-                           or instr(upper(cod_moneda), upper(:busqueda1)) > 0
-                           and  :cod_moneda1 is null)
-                           or (:cod_moneda2 is null and :busqueda2 is null)
-                           ) asd
-                         ) dsa
-                  where r between ({$pag}+ ({$pag} * {$cant}) - ({$cant}+ {$pag}) + 1) and
-                             ({$pag} + ({$pag}* {$cant}) - ({$cant} + {$pag}) + {$cant})";
+            $consulta = "SELECT C.COD_FORMA_PAGO, F.DESCRIPCION DESC_FORMA_PAGO
+                         FROM cc_plazo_documento C
+                         JOIN CC_FORMAS_PAGO F
+                           ON C.COD_FORMA_PAGO = F.COD_FORMA_PAGO
+                         WHERE C.COD_CONDICION_VENTA = :COD_CONDICION_VENTA
+                         AND F.COD_FORMA_PAGO = :COD_FORMA_PAGO";
             //print_r($consulta);
             // Preparar sentencia
             $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
 
             // Ejecutar sentencia preparada
-            $comando->execute([':cod_moneda' => $cod_moneda,
-                               ':busqueda' => $busqueda,
-                               ':busqueda1' => $busqueda,
-                               ':cod_moneda1' => $cod_moneda,
-                               ':cod_moneda2' => $cod_moneda,
-                               ':busqueda2' => $busqueda]);
+            $comando->execute([':COD_CONDICION_VENTA' => $COD_CONDICION_VENTA,
+                ':COD_FORMA_PAGO' => $COD_FORMA_PAGO]);
 
             $result = $comando->fetchAll(PDO::FETCH_ASSOC);
 
@@ -435,7 +587,862 @@ class operacionesDB {
             return false;
         }
     }
+
+    /**
+     * Trae datos de la condicion de venta
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function ListarTiposDocumentos($COD_CONDICION_VENTA, $busqueda, $pag) {
+        try {
+            $cant = 10;
+            //print_r('ASD');
+            //print_r($busqueda);
+            $consulta = "select dsa.DESC_FORMA_PAGO, dsa.COD_FORMA_PAGO
+                        from (select asd.*, rownum r
+                              from (
+
+                                    SELECT C.COD_FORMA_PAGO, F.DESCRIPCION DESC_FORMA_PAGO
+                                      FROM cc_plazo_documento C
+                                      JOIN CC_FORMAS_PAGO F
+                                        ON C.COD_FORMA_PAGO = F.COD_FORMA_PAGO
+                                     WHERE  C.COD_CONDICION_VENTA = :COD_CONDICION_VENTA
+                                      AND (upper(F.DESCRIPCION) like upper('%'||'{$busqueda}'||'%') or
+                                          upper(F.COD_FORMA_PAGO) like upper('%'||'{$busqueda}'||'%'))
+                                    ) asd
+                             ) dsa
+                         where r between ({$pag} + ({$pag} * {$cant}) - ({$cant} + {$pag}) + 1) and
+                               ({$pag} + ({$pag} * {$cant}) - ({$cant} + {$pag}) + {$cant})";
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_CONDICION_VENTA' => $COD_CONDICION_VENTA,
+            /* ':busqueda' => $busqueda,
+              ':busqueda1' => $busqueda */            ]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+            //PRINT_R($result);
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Valida lista direcciones
+     *
+     * @param Documento y codigo de cliente
+     * @return Datos de cliente
+     */
+    public static function DatosDireccion($COD_CLIENTE, $COD_DIRECCION) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "SELECT D.DETALLE DESC_DIRECCION, D.COD_DIRECCION, I.DESCRIPCION CIUDAD
+                        FROM CC_CLIENTES C
+                             JOIN DIREC_PERSONAS D
+                             ON C.COD_PERSONA = D.COD_PERSONA
+                             LEFT JOIN CIUDADES I
+                             ON D.COD_CIUDAD = I.COD_CIUDAD
+                        WHERE C.COD_EMPRESA = '1'
+                        AND C.COD_CLIENTE = :COD_CLIENTE    
+                        AND D.COD_DIRECCION = :COD_DIRECCION";
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_CLIENTE' => $COD_CLIENTE,
+                ':COD_DIRECCION' => $COD_DIRECCION]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Valida lista direcciones
+     *
+     * @param Documento y codigo de cliente
+     * @return Datos de cliente
+     */
+    public static function ListarDirecciones($COD_CLIENTE, $busqueda, $pag) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "select dsa.DESC_DIRECCION,
+                        dsa.CIUDAD,
+                        dsa.COD_DIRECCION
+                   from (select asd.*, rownum r
+                           from (SELECT D.DETALLE       DESC_DIRECCION,
+                                        D.COD_DIRECCION,
+                                        I.DESCRIPCION   CIUDAD
+                                   FROM CC_CLIENTES C
+                                   JOIN DIREC_PERSONAS D
+                                     ON C.COD_PERSONA = D.COD_PERSONA
+                                   LEFT JOIN CIUDADES I
+                                     ON D.COD_CIUDAD = I.COD_CIUDAD
+                                  WHERE C.COD_CLIENTE = :COD_CLIENTE
+                                    AND (D.DETALLE LIKE UPPER('%'||:busqueda||'%')
+                                        or I.DESCRIPCION LIKE UPPER('%'||:busqueda1||'%')
+                                        or D.COD_DIRECCION LIKE UPPER('%'||:busqueda2||'%'))
+                                    and rownum <= ({$pag} * {$cant})
+                                    and cod_empresa = '1'
+                                     
+                                 ) asd) dsa
+                  where r >= ({$pag}  + ({$pag} * {$cant}) - ({$cant} + {$pag} ) + 1)";
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_CLIENTE' => $COD_CLIENTE,
+                ':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda,
+                ':busqueda2' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Listar articulo
+     *
+     * @param Documento y codigo de cliente
+     * @return Datos de cliente
+     */
+    public static function ListarArticulos($busqueda, $pag) {
+        $cant = 20;
+        try {
+            $conn = null;
+            $consulta = "select dsa.COD_ARTICULO, 
+                        dsa.DESCRIPCION, 
+                        dsa.COD_UNIDAD_MEDIDA,
+                        dsa.CANTIDAD,
+                        dsa.CANTIDAD_UB
+                   from (select asd.*, rownum r
+                           from (SELECT A.COD_ARTICULO,
+                                        A.DESCRIPCION,
+                                        R.COD_UNIDAD_REL COD_UNIDAD_MEDIDA,
+                                        (E.EXISTENCIA * R.DIV / R.MULT) CANTIDAD,
+                                        E.EXISTENCIA CANTIDAD_UB
+                                   FROM ST_ARTICULOS A
+                                   JOIN (SELECT COD_EMPRESA,
+                                               COD_ARTICULO,
+                                               SUM((CANTIDAD - CASE
+                                                     WHEN RESERVADO < 0 THEN
+                                                      0
+                                                     ELSE
+                                                      RESERVADO
+                                                   END)) EXISTENCIA
+                                          FROM ST_EXISTENCIA_RES
+                                         WHERE COD_SUCURSAL = '01'
+                                         GROUP BY COD_ARTICULO, COD_EMPRESA
+                                        HAVING SUM((CANTIDAD -CASE
+                                          WHEN RESERVADO < 0 THEN
+                                           0
+                                          ELSE
+                                           RESERVADO
+                                        END)) > 0) E
+                                     ON A.COD_ARTICULO = E.COD_ARTICULO
+                                    AND A.COD_EMPRESA = E.COD_EMPRESA
+                                   LEFT JOIN ST_RELACIONES R
+                                     ON A.COD_RELACION_UM = R.COD_RELACION_UM
+                                    AND r.por_defecto = 'S'
+                                  WHERE A.COD_RUBRO != '12'
+                                    AND A.COD_ARTICULO NOT LIKE 'BOL0%'
+                                    AND (A.COD_ARTICULO like '%' || upper(:busqueda) || '%' OR
+                                        A.DESCRIPCION like '%' || upper(:busqueda1) || '%')
+
+                                    and rownum <= ({$pag} * {$cant})) asd) dsa
+                  where r >= ({$pag} + ({$pag} * {$cant}) - ({$cant} + {$pag}) + 1)";
+
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Listar articulo
+     *
+     * @param Documento y codigo de cliente
+     * @return Datos de cliente
+     */
+    public static function ListarColoresTallas($busqueda, $pag, $cod_articulo) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "select DSA.COD_ARTICULO,
+                                DSA.DESCRIPCION,
+                                DSA.COD_COLOR,
+                                DSA.DESC_COLOR,
+                                DSA.COD_TALLA,
+                                DSA.EXISTENCIA
+                           from (select asd.*, rownum r
+                                   from (SELECT A.COD_ARTICULO,
+                                                A.DESCRIPCION,
+                                                E.COD_COLOR,
+                                                NVL(MC.DESC_INTERNO, C.DESCRIPCION) DESC_COLOR,
+                                                E.COD_TALLA,
+                                                (E.CANTIDAD - CASE
+                                                  WHEN E.RESERVADO < 0 THEN
+                                                   0
+                                                  ELSE
+                                                   E.RESERVADO
+                                                END) EXISTENCIA
+                                           FROM ST_ARTICULOS A
+                                           JOIN ST_EXISTENCIA_RES E
+                                             ON A.COD_ARTICULO = E.COD_ARTICULO
+                                            AND A.COD_EMPRESA = E.COD_EMPRESA
+                                            AND E.COD_SUCURSAL = bs_busca_parametro('VT','COD_SUCURSAL_WEB')
+                                           LEFT JOIN ST_MARCA_COLOR MC
+                                             ON A.COD_MARCA = MC.COD_MARCA
+                                            AND A.COD_ARTICULO = MC.COD_ARTICULO
+                                            AND E.COD_COLOR = MC.COD_ORIGEN
+                                           LEFT JOIN COLORES C
+                                             ON C.COD_EMPRESA = E.COD_EMPRESA
+                                            AND C.COD_COLOR = E.COD_COLOR
+                                          WHERE A.COD_ARTICULO = :COD_ARTICULO
+                                            AND (E.COD_COLOR like upper('%' || trim(:busqueda) || '%') OR
+                                                 NVL(MC.DESC_INTERNO, C.DESCRIPCION) like upper('%' || trim(:busqueda1) || '%') OR
+                                                 E.COD_TALLA like upper('%' || trim(:busqueda2) || '%'))
+                                            AND (E.CANTIDAD - CASE
+                                                  WHEN E.RESERVADO < 0 THEN
+                                                   0
+                                                  ELSE
+                                                   E.RESERVADO
+                                                END) > 0
+
+                                            and rownum <= ({$pag} * {$cant})) asd) dsa
+                          where r >= ({$pag}+ ({$pag} * {$cant}) - ({$cant} + {$pag}) + 1)";
+            //print_r($consulta);     
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_ARTICULO' => $cod_articulo,
+                ':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda,
+                ':busqueda2' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Listar articulo
+     *
+     * @param Documento y codigo de cliente
+     * @return Datos de cliente
+     */
+    public static function consultaExistencia($cod_articulo) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "SELECT A.COD_ARTICULO,
+                                A.DESCRIPCION,
+                                E.COD_COLOR,
+                                NVL(MC.DESC_INTERNO, C.DESCRIPCION) DESC_COLOR,
+                                E.COD_TALLA,
+                                (E.CANTIDAD - CASE
+                                  WHEN E.RESERVADO < 0 THEN
+                                   0
+                                  ELSE
+                                   E.RESERVADO
+                                END) EXISTENCIA,
+                                'articulos/WET3149.JPG' IMAGEN,
+                                REPLACE(S.DESCRIPCION||' ('||S.COD_SUCURSAL||')',' ','&nbsp;') SUCURSAL
+                           FROM ST_ARTICULOS A
+                           JOIN ST_EXISTENCIA_RES E
+                             ON A.COD_ARTICULO = E.COD_ARTICULO
+                            AND A.COD_EMPRESA = E.COD_EMPRESA
+                            -- AND E.COD_SUCURSAL = bs_busca_parametro('VT','COD_SUCURSAL_WEB')
+                           LEFT JOIN ST_MARCA_COLOR MC
+                             ON A.COD_MARCA = MC.COD_MARCA
+                            AND A.COD_ARTICULO = MC.COD_ARTICULO
+                            AND E.COD_COLOR = MC.COD_ORIGEN
+                           LEFT JOIN COLORES C
+                             ON C.COD_EMPRESA = E.COD_EMPRESA
+                            AND C.COD_COLOR = E.COD_COLOR
+                           JOIN SUCURSALES S
+                            ON E.COD_EMPRESA = S.COD_EMPRESA
+                            AND E.COD_SUCURSAL = S.COD_SUCURSAL
+                          WHERE A.COD_ARTICULO = :COD_ARTICULO
+                            AND S.TIPO = 'RET'
+                            AND (E.COD_COLOR like upper('%' || trim(:busqueda) || '%') OR
+                                 NVL(MC.DESC_INTERNO, C.DESCRIPCION) like upper('%' || trim(:busqueda1) || '%') OR
+                                 E.COD_TALLA like upper('%' || trim(:busqueda2) || '%'))
+                            AND (E.CANTIDAD - CASE
+                                  WHEN E.RESERVADO < 0 THEN
+                                   0
+                                  ELSE
+                                   E.RESERVADO
+                                END) > 0";
+            //print_r($consulta);     
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_ARTICULO' => $cod_articulo,
+                ':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda,
+                ':busqueda2' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    public static function consultaPrecio($cod_articulo, $cod_unidad_medida) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "SELECT TRAE_PRECIO('1',:COD_ARTICULO, bs_busca_parametro('VT', 'LISTA_PRECIO_WEB'),NULL,:COD_UNIDAD_MEDIDA,:OMITIR_OFERTA) PRECIO,
+                         TIENE_OFERTA('1',:COD_ARTICULO1, bs_busca_parametro('VT', 'LISTA_PRECIO_WEB'),NULL,NULL,:OMITIR_OFERTA1) OFERTA
+                         FROM DUAL";
+            //print_r($consulta);
+            //print_r($cod_articulo);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_ARTICULO' => $cod_articulo,
+                ':COD_UNIDAD_MEDIDA' => $cod_unidad_medida,
+                ':OMITIR_OFERTA' => 'N',
+                ':COD_ARTICULO1' => $cod_articulo,
+                ':OMITIR_OFERTA1' => 'N']);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    public static function datosOferta($cod_oferta) {
+        $cant = 10;
+        try {
+            $conn = null;
+            $consulta = "SELECT C.FECHA_ALTA, 
+                                C.FEC_VIGENCIA_INI, 
+                                C.FEC_VIGENCIA_FIN,
+                                C.DESCRIPCION DESC_OFERTA,
+                                C.COD_SUCURSAL,
+                                S.DESCRIPCION DESC_SUCURSAL
+                         FROM VT_OFERTAS_CAB C
+                              LEFT JOIN SUCURSALES S
+                              ON C.COD_SUCURSAL = S.COD_SUCURSAL
+                              AND C.COD_EMPRESA = S.COD_EMPRESA
+                         WHERE C.COD_EMPRESA = '1'
+                         AND C.COD_OFERTA = :COD_OFERTA";
+            //print_r($consulta);   
+            //print_r($cod_articulo);    
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_OFERTA' => $cod_oferta]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trae datos de la condicion de venta
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function DatosMetodosPagos($COD_METODO) {
+        try {
+            $cant = 10;
+            $consulta = "SELECT E.COD_METODO,
+                                E.DESCRIPCION DESC_METODO,
+                                E.TIPO_PAGO
+                         FROM WEB_APP_METODO_PAGO E
+                         WHERE E.COD_METODO = :COD_METODO";
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_METODO' => $COD_METODO]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trae datos de la condicion de venta
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function ListarMetodosPagos($TIPO_PAGO, $busqueda, $pag) {
+        try {
+            $cant = 10;
+            //print_r('ASD');
+            //print_r($busqueda);
+            $consulta = "select DSA.COD_METODO,
+                                DSA.DESC_METODO,
+                                DSA.TIPO_PAGO
+                           from (select asd.*, rownum r
+                                   from (SELECT E.COD_METODO, E.DESCRIPCION DESC_METODO, E.TIPO_PAGO
+                                           FROM WEB_APP_METODO_PAGO E
+                                          WHERE E.TIPO_PAGO = :TIPO_PAGO
+                                            AND (E.COD_METODO like
+                                                upper('%' || trim(:busqueda) || '%') OR
+                                                E.DESCRIPCION like
+                                                upper('%' || trim(:busqueda1) || '%'))
+
+                                            and rownum <= ({$pag} * {$cant} )) asd) dsa
+                          where r >= ({$pag} + ({$pag} * {$cant} ) - ({$cant}  + {$pag} ) + 1)";
+
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':TIPO_PAGO' => $TIPO_PAGO,
+                ':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+            //PRINT_R($result);
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trae datos de la condicion de venta
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function ListarDelivery($busqueda, $pag) {
+        try {
+            $cant = 10;
+            //print_r('ASD');
+            //print_r($busqueda);
+            $consulta = "select DSA.COD_DELIVERY,
+                                DSA.DESCRIPCION,
+                                DSA.MONTO
+                           from (select asd.*, rownum r
+                                   from (SELECT E.Cod_Delivery, E.DESCRIPCION, E.MONTO
+                                           FROM WEB_APP_DELIVERY E
+                                          WHERE (E.COD_DELIVERY like
+                                                upper('%' || trim(:busqueda) || '%') OR
+                                                E.DESCRIPCION like
+                                                upper('%' || trim(:busqueda1) || '%'))
+
+                                            and rownum <= ({$pag} * {$cant})) asd) dsa
+                          where r >= ({$pag}  + ({$pag} * {$cant}) - ({$cant} + {$pag} ) + 1)";
+
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':busqueda' => $busqueda,
+                ':busqueda1' => $busqueda]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+            //PRINT_R($result);
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trae datos de la condicion de venta
+     *
+     * @param $pag Pagina actual, $busqueda Texto buscado
+     * @return Lista de condiciones de venta
+     */
+    public static function DatosDelivery($COD_DELIVERY) {
+        try {
+            $cant = 10;
+            $consulta = "SELECT E.COD_DELIVERY,
+                                E.DESCRIPCION ,
+                                E.MONTO
+                         FROM WEB_APP_DELIVERY E
+                         WHERE E.COD_DELIVERY = :COD_DELIVERY";
+            //print_r($consulta);
+            // Preparar sentencia
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            $comando->execute([':COD_DELIVERY' => $COD_DELIVERY]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    public static function ListarPedidos($cod_call, $usr_call, $busqueda, $pag) {
+        try {
+            $cant = 10;
+            //print_r('ASD');
+            //print_r($busqueda);
+            $consulta = "select COD_PEDIDO,
+                                FEC_COMPROBANTE,
+                                COD_CLIENTE,
+                                NOM_CLIENTE,
+                                MONTO_DELIVERY,
+                                TOTAL_SOLICITUD,
+                                TOTAL,
+                                VOUCHER,
+                                TIPO_PAGO,
+                                COD_METODO,
+                                METODO_PAGO,
+                                COD_DELIVERY,
+                                DELIVERY,
+                                estado,
+                                USA_VOUCHER,
+                                CONTADO
+           from (select asd.*, rownum r
+                   from (SELECT W.COD_PEDIDO,
+                                TO_CHAR(TRUNC(W.FEC_COMPROBANTE),'DD/MM/YYYY') FEC_COMPROBANTE,
+                                W.COD_CLIENTE,
+                                W.NOM_CLIENTE,
+                                W.MONTO_DELIVERY,
+                                SUM(D.MONTO_TOTAL) TOTAL_SOLICITUD,
+                                NVL(W.MONTO_DELIVERY, 0) + SUM(D.MONTO_TOTAL) TOTAL,
+                                NVL(W.VOUCHER,' ') VOUCHER,
+                                DECODE(w.tipo_pago, 'CRE', 'CREDITO', 'CONTADO') TIPO_PAGO,
+                                M.COD_METODO,
+                                M.DESCRIPCION METODO_PAGO,
+                                L.COD_DELIVERY,
+                                L.DESCRIPCION DELIVERY,
+                                DECODE(C.AUTORIZA_STOCK,
+                                       'S',
+                                       'Confirmado',
+                                       'A',
+                                       'Anulado',
+                                       'Pendiente') estado,
+                                NVL(M.USA_VOUCHER,'N') USA_VOUCHER,
+                                NVL(M.CONTADO,'N') CONTADO
+                           FROM WEB_APP_PED_CAB W
+                           JOIN VT_PED_CAB C
+                             ON W.COD_EMPRESA = C.COD_EMPRESA
+                            AND W.COD_PEDIDO = C.COD_PEDIDO_WEB
+                           JOIN VT_PED_DET D
+                             ON C.COD_EMPRESA = D.COD_EMPRESA
+                            AND C.TIP_COMPROBANTE = D.TIP_COMPROBANTE
+                            AND C.SER_COMPROBANTE = D.SER_COMPROBANTE
+                            AND C.NRO_COMPROBANTE = D.NRO_COMPROBANTE
+                            AND C.SECUENCIA = D.SECUENCIA
+                           LEFT JOIN WEB_APP_METODO_PAGO M
+                             ON W.COD_METODO = M.COD_METODO
+                           LEFT JOIN WEB_APP_DELIVERY L
+                             ON W.COD_DELIVERY = L.COD_DELIVERY
+                          WHERE W.COD_EMPRESA = '1'
+                            AND W.COD_CALL = :COD_CALL
+                            AND W.USR_CALL = :USR_CALL
+                            AND (TO_CHAR(W.COD_PEDIDO) like
+                                upper('%' || trim('{$busqueda}') || '%') OR
+                                upper(W.NOM_CLIENTE) like
+                                upper('%' || trim('{$busqueda}') || '%'))
+                            and (NVL(M.USA_VOUCHER,'N') = 'S'
+                                 OR NVL(M.CONTADO,'N') != 'S')
+
+                            and rownum <= ({$pag} * {$cant})
+                            and DECODE(C.AUTORIZA_STOCK,
+                                       'S',
+                                       'Confirmado',
+                                       'A',
+                                       'Anulado',
+                                       'Pendiente') = 'Pendiente'
+                            
+                          GROUP BY W.COD_PEDIDO,
+                                   W.FEC_COMPROBANTE,
+                                   W.COD_CLIENTE,
+                                   W.NOM_CLIENTE,
+                                   W.MONTO_DELIVERY,
+                                   W.VOUCHER,
+                                   DECODE(w.tipo_pago, 'CRE', 'CREDITO', 'CONTADO'),
+                                   M.COD_METODO,
+                                   M.DESCRIPCION,
+                                   L.DESCRIPCION,
+                                   L.COD_DELIVERY,
+                                   DECODE(C.AUTORIZA_STOCK,
+                                          'S',
+                                          'Confirmado',
+                                          'Pendiente'),
+                                   DECODE(C.AUTORIZA_STOCK,
+                                          'S',
+                                          'Confirmado',
+                                          'A',
+                                          'Anulado',
+                                          'Pendiente'),
+                                   M.USA_VOUCHER,
+                                   M.CONTADO
+                          order by W.FEC_COMPROBANTE desc) asd) dsa
+                     where r >= ({$pag} + ({$pag}* {$cant}) - ({$cant} + {$pag}) + 1)";
+
+            //print_r($consulta);
+            // Preparar sentencia
+            //print_r($busqueda);
+            $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
+
+            // Ejecutar sentencia preparada
+            /*$comando->bindParam(':COD_CALL', $cod_call, PDO::PARAM_STR);
+            $comando->bindParam(':USR_CALL', $usr_call, PDO::PARAM_STR);
+            $comando->bindParam(':busqueda', $busqueda, PDO::PARAM_STR);
+            $comando->bindParam(':busqueda1', $busqueda, PDO::PARAM_STR);*/
+            $comando->execute([':COD_CALL' => $cod_call,
+                               ':USR_CALL' => $usr_call/*,
+                               ':busqueda' => $busqueda,
+                               ':busqueda1' => $busqueda*/]);
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+            //PRINT_R($result);
+            return utf8_converter($result);
+        } catch (PDOException $e) {
+          //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    public static function insertaCliente($persona) {
+        try {
+
+            $sql = "begin :res := fcrea_cliente(:pcod_empresa,
+                                                :pnombre,
+                                                :pnomb_fantasia,
+                                                :pdireccion,
+                                                :parea1,
+                                                :ptelefono1,
+                                                :parea2,
+                                                :ptelefono2,
+                                                :pruc,
+                                                :pci,
+                                                :pfec_nacimiento,
+                                                :psexo); end;";
+            //print_r($sql);
+            // Preparar sentencia
+            //print_r($persona);
+            //print $persona['NOMBRE'];
+            $comando = oraconnect::getInstance()->getDb()->prepare($sql);
+            $comando->bindParam(':res', $result, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT);
+            $comando->bindParam(':pcod_empresa', $persona['COD_EMPRESA'], PDO::PARAM_STR);
+            $comando->bindParam(':pnombre', $persona['NOMBRE'], PDO::PARAM_STR);
+            $comando->bindParam(':pnomb_fantasia', $persona['NOMBRE_FANTASIA'], PDO::PARAM_STR);
+            $comando->bindParam(':pdireccion', $persona['DIRECCION'], PDO::PARAM_STR);
+            $comando->bindParam(':parea1', $persona['AREA1'], PDO::PARAM_STR);
+            $comando->bindParam(':ptelefono1', $persona['NUMERO1'], PDO::PARAM_STR);
+            $comando->bindParam(':parea2', $persona['AREA2'], PDO::PARAM_STR);
+            $comando->bindParam(':ptelefono2', $persona['NUMERO2'], PDO::PARAM_STR);
+            $comando->bindParam(':pruc', $persona['RUC'], PDO::PARAM_STR);
+            $comando->bindParam(':pci', $persona['CI'], PDO::PARAM_STR);
+            $comando->bindParam(':pfec_nacimiento', $persona['FEC_NACIMIENTO'], PDO::PARAM_STR);
+            $comando->bindParam(':psexo', $persona['SEXO'], PDO::PARAM_STR);
+
+            $comando->execute();
+            //var_dump($result);
+            //$result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    public static function insertaCabeceraPedido($pedidoCab) {
+        try {
+
+            $sql = "begin :res := FWEB_APP_INSERTA_CAB_PEDIDO(:PCOD_CLIENTE,
+                                                              :PNOM_CLIENTE,
+                                                              :PTEL_CLIENTE,
+                                                              :PRUC,
+                                                              :PCAMBIAR_NOMBRE,
+                                                              :PTIPO_PAGO,
+                                                              :PCOD_METODO,
+                                                              :PUSR_CALL,
+                                                              :PCOD_CALL,
+                                                              :PCOD_DIRECCION,
+                                                              :PDESC_DIRECCION,
+                                                              :PCOD_DELIVERY,
+                                                              :PMONTO_DELIVERY,
+                                                              :PNRO_SOLICUTUD,
+                                                              :POBSERVACION) ; end;";
+            //print_r($sql);
+            // Preparar sentencia
+            //print_r($pedidoCab);
+            //print $persona['NOMBRE'];
+            $comando = oraconnect::getInstance()->getDb()->prepare($sql);
+            $comando->bindParam(':res', $result, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT);
+            $comando->bindParam(':PCOD_CLIENTE', $pedidoCab['COD_CLIENTE'], PDO::PARAM_STR);
+            $comando->bindParam(':PNOM_CLIENTE', $pedidoCab['NOM_CLIENTE'], PDO::PARAM_STR);
+            $comando->bindParam(':PTEL_CLIENTE', $pedidoCab['TEL_CLIENTE'], PDO::PARAM_STR);
+            $comando->bindParam(':PRUC', $pedidoCab['RUC'], PDO::PARAM_STR);
+            $comando->bindParam(':PCAMBIAR_NOMBRE', $pedidoCab['CAMBIAR_NOMBRE'], PDO::PARAM_STR);
+            $comando->bindParam(':PTIPO_PAGO', $pedidoCab['TIPO_PAGO'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_METODO', $pedidoCab['COD_METODO'], PDO::PARAM_STR);
+            $comando->bindParam(':PUSR_CALL', $pedidoCab['USR_CALL'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_CALL', $pedidoCab['COD_CALL'], PDO::PARAM_INT);
+            $comando->bindParam(':PCOD_DIRECCION', $pedidoCab['COD_DIRECCION'], PDO::PARAM_STR);
+            $comando->bindParam(':PDESC_DIRECCION', $pedidoCab['DESC_DIRECCION'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_DELIVERY', $pedidoCab['COD_DELIVERY'], PDO::PARAM_STR);
+            $comando->bindParam(':PMONTO_DELIVERY', $pedidoCab['MONTO_DELIVERY'], PDO::PARAM_INT);
+            $comando->bindParam(':PNRO_SOLICUTUD', $pedidoCab['NRO_SOLICUTUD'], PDO::PARAM_STR);
+            $comando->bindParam(':POBSERVACION', $pedidoCab['OBSERVACION'], PDO::PARAM_STR);
+
+            $comando->execute();
+            //var_dump($result);
+            //$result = $comando->fetchAll(PDO::FETCH_ASSOC);
+            //print_r($result);
+            return utf8_converter_sting($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return utf8_converter_sting($e->getMessage());
+        }
+    }
+
+    public static function insertaDetallePedido($pedidoDet) {
+        try {
+
+            $sql = "begin :res := FWEB_APP_INSERTA_DET_PEDIDO(:PCOD_PEDIDO,
+                                                              :PNRO_ORDEN,
+                                                              :PCOD_ARTICULO,
+                                                              :PCANTIDAD,
+                                                              :PPRECIO_UNITARIO,
+                                                              :PMONTO_TOTAL,
+                                                              :PTOTAL_IVA,
+                                                              :PPRECIO_LISTA,
+                                                              :PDESCUENTO,
+                                                              :PPORC_DESCUENTO,
+                                                              :PCOD_UNIDAD_MEDIDA,
+                                                              :PPORC_IVA,
+                                                              :PDESC_ARTICULO,
+                                                              :PCOD_COLOR,
+                                                              :PCOD_TALLA,
+                                                              :PGRAVADAS,
+                                                              :PEXENTAS,
+                                                              :POMITIR_OFERTA) ; end;";
+            //print_r($sql);
+            // Preparar sentencia
+            //print_r($pedidoDet);
+            //print $persona['NOMBRE'];
+            $comando = oraconnect::getInstance()->getDb()->prepare($sql);
+            $comando->bindParam(':res', $result, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT);
+            $comando->bindParam(':PCOD_PEDIDO', $pedidoDet['NRO_SOLICUTUD'], PDO::PARAM_STR);
+            $comando->bindParam(':PNRO_ORDEN', $pedidoDet['ORDEN'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_ARTICULO', $pedidoDet['COD_ARTICULO'], PDO::PARAM_STR);
+            $comando->bindParam(':PCANTIDAD', $pedidoDet['CANTIDAD'], PDO::PARAM_STR);
+            $comando->bindParam(':PPRECIO_UNITARIO', $pedidoDet['PRECIO_UNITARIO'], PDO::PARAM_STR);
+            $comando->bindParam(':PMONTO_TOTAL', $pedidoDet['MONTO_TOTAL'], PDO::PARAM_STR);
+            $comando->bindParam(':PTOTAL_IVA', $pedidoDet['TOTAL_IVA'], PDO::PARAM_STR);
+            $comando->bindParam(':PPRECIO_LISTA', $pedidoDet['PRECIO_LISTA'], PDO::PARAM_STR);
+            $comando->bindParam(':PDESCUENTO', $pedidoDet['DESCUENTO'], PDO::PARAM_STR);
+            $comando->bindParam(':PPORC_DESCUENTO', $pedidoDet['PORC_DESCUENTO'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_UNIDAD_MEDIDA', $pedidoDet['COD_UNIDAD_MEDIDA'], PDO::PARAM_STR);
+            $comando->bindParam(':PPORC_IVA', $pedidoDet['PORC_IVA'], PDO::PARAM_STR);
+            $comando->bindParam(':PDESC_ARTICULO', $pedidoDet['DESC_ARTICULO'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_COLOR', $pedidoDet['COD_COLOR'], PDO::PARAM_STR);
+            $comando->bindParam(':PCOD_TALLA', $pedidoDet['COD_TALLA'], PDO::PARAM_STR);
+            $comando->bindParam(':PGRAVADAS', $pedidoDet['GRAVADAS'], PDO::PARAM_STR);
+            $comando->bindParam(':PEXENTAS', $pedidoDet['EXENTAS'], PDO::PARAM_STR);
+            $comando->bindParam(':POMITIR_OFERTA', $pedidoDet['OMITIR_OFERTA'], PDO::PARAM_STR);
+
+            $comando->execute();
+            //var_dump($result);
+            //$result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return utf8_converter_sting($result);
+        } catch (PDOException $e) {
+            //print_r($e->getMessage());
+            return utf8_converter_sting($e->getMessage());
+        }
+    }
+
+    public static function completaCarga($cod_pedido) {
+        try {
+
+            $sql = "begin :res := FWEB_COMPLETA_CARGA(:cod_pedido); end;";
+
+            $comando = oraconnect::getInstance()->getDb()->prepare($sql);
+            $comando->bindParam(':res', $result, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT);
+            $comando->bindParam(':cod_pedido', $cod_pedido, PDO::PARAM_STR);
+
+            $comando->execute();
+
+            return $result;
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    }
     
+    public static function confirmaPedido($cod_pedido,$voucher) {
+        try {
+
+            $sql = "begin :res := FWEB_APP_CONFIRMA_PEDIDO(:COD_PEDIDO, :VOUCHER); end;";
+
+            $comando = oraconnect::getInstance()->getDb()->prepare($sql);
+            $comando->bindParam(':res', $result, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT);
+            $comando->bindParam(':COD_PEDIDO', $cod_pedido, PDO::PARAM_STR);
+            $comando->bindParam(':VOUCHER', $voucher, PDO::PARAM_STR);
+            $comando->execute();
+
+            return $result;
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    }
+
     /**
      * Retorna datos de venta del dia ANTERIOR
      *

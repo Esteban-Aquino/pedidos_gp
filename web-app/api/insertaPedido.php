@@ -21,7 +21,7 @@
         # Obtener como Array
         $pedido = json_decode(utf8_converter_sting($json_str), true);
         
-        print_r($pedido);
+        //print_r($pedido);
         
     }
     

@@ -12,3 +12,17 @@ and open the template in the editor.
     color: #f7f7f7;
     font-style: oblique;
 }
+
+.icono {
+    font-size: 120px !important;
+    margin-left: 25px;
+    margin-top: 20px;
+}
+
+.tile-stats h3 {
+    margin-bottom: 20px;
+}
+
+.opcion {
+    cursor:pointer;
+}

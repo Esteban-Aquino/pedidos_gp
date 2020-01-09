@@ -16,22 +16,28 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Pedidos</h2>
+                <h2>Solicitud de compra</h2>
                 <div class="clearfix"></div>
             </div>
             <!-- CABECERA -->
             <div class="x_content">
                 <form id="pedido" class="form-horizontal form-label-left" action="javascript:void(0);" autocomplete="off" novalidate>
                     <div class="row item form-group">
-                        <label class="control-label col-md-1 col-sm-1 col-xs-4" for="DOCUMENTO">Documento:
+                        <label class="control-label col-md-1 col-sm-1 col-xs-4" for="DOCUMENTO">Buscar&nbsp;RUC/CI:
                         </label>
                         <div class="col-md-2 col-sm-2 col-xs-6">
                             <input id="DOCUMENTO" class="form-control col-md-7 col-xs-12" name="DOCUMENTO"   type="text">
                         </div>
 
-                        <label class="control-label col-md-2 col-sm-2 col-xs-4" for="COD_PEDIDO">Numero pedido:
+                        <label class="control-label col-md-3 col-sm-2 col-xs-4" for="COD_PEDIDO">Operacion:
                         </label>
                         <div class="col-md-2 col-sm-2 col-xs-6">
+                            <input id="NRO_SOLICUTUD" class="form-control col-md-7 col-xs-12" name="NRO_SOLICUTUD"   type="text">
+                        </div>
+
+                        <label class="control-label col-md-1 col-sm-2 col-xs-4" for="COD_PEDIDO">Nro&nbsp;pedido:
+                        </label>
+                        <div class="col-md-1 col-sm-2 col-xs-6">
                             <input id="COD_PEDIDO" class="form-control col-md-7 col-xs-12" name="COD_PEDIDO"   type="number">
                         </div>
                         <div class="col-md-1 col-sm-1 col-xs-2">
@@ -48,41 +54,57 @@
                         <label class="control-label col-md-2 col-sm-2 col-xs-4" for="COD_CLIENTE">Cliente:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-8">
-                            <input id="COD_CLIENTE" class="form-control col-md-7 col-xs-12" name="COD_CLIENTE"   type="number" required="required">
+                            <input id="COD_CLIENTE" class="form-control col-md-7 col-xs-12" name="COD_CLIENTE"   type="text" required="required">
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <input id="DESC_CLIENTE" class="form-control col-md-7 col-xs-12" name="DESC_CLIENTE"   type="text" readonly="readonly">
                         </div>
                     </div>
                     <div class="row item form-group">
-                        <label class="control-label col-md-1 col-sm-1 col-xs-2" for="COD_CONDICION_VENTA">Cond.&nbsp;Venta:
+                        <!--<label class="control-label col-md-1 col-sm-1 col-xs-2" for="COD_CONDICION_VENTA">Cond.&nbsp;Venta:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-3">
                             <input id="COD_CONDICION_VENTA" class="form-control col-md-7 col-xs-4" name="COD_CONDICION_VENTA"   type="text" required="required">
                         </div>
                         <div class="col-md-2 col-sm-2 col-xs-7">
                             <input id="DESC_CONDICION" class="form-control col-md-7 col-xs-6" name="DESC_CONDICION"   type="text" readonly="readonly">
+                        </div>-->
+                        <label class="control-label col-md-1 col-sm-1 col-xs-2" for="TIPO_PAGO">Tipo.&nbsp;Pago:
+                        </label>
+                        <div class="col-md-3 col-sm-3 col-xs-10">
+                            <select id="TIPO_PAGO" class="select2_single form-control" tabindex="-1">
+                                <option value="CRE">Credito</option>
+                                <option value="CON">Contado</option>
+                            </select>
                         </div>
 
                         <label class="control-label col-md-1 col-sm-1 col-xs-4" for="CAMBIAR_NOMBRE">A&nbsp;nombre:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-8 centrado">
-                            <input id="CAMBIAR_NOMBRE" class="check" name="CAMBIAR_NOMBRE"   type="checkbox" value="S">
+                            <input id="CAMBIAR_NOMBRE" class="check" name="CAMBIAR_NOMBRE"   type="checkbox" value="S" checked>
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <input id="NOM_CLIENTE" class="form-control col-md-7 col-xs-12" name="NOM_CLIENTE"   type="text" required="required">
                         </div>
 
                     </div>
-                    <div class="row item form-group">                      
-                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="COD_CLIENTE">Moneda:
+                    <div class="row item form-group">   
+                        <!--<label class="control-label col-md-1 col-sm-1 col-xs-1" for="COD_MONEDA">Moneda:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-2">
                             <input id="COD_MONEDA" class="form-control col-md-7 col-xs-4" name="COD_MONEDA"   type="text" required="required">
                         </div>
                         <div class="col-md-2 col-sm-2 col-xs-7">
                             <input id="DESC_MONEDA" class="form-control col-md-7 col-xs-6" name="DESC_MONEDA"  readonly="readonly">
+                        </div> -->
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="COD_MONEDA">Metodo&nbsp;Pago:
+                        </label>
+                        <div class="col-md-1 col-sm-1 col-xs-2">
+                            <input id="COD_METODO" class="form-control col-md-7 col-xs-4" name="COD_METODO"   type="text" required="required">
                         </div>
+                        <div class="col-md-2 col-sm-2 col-xs-7">
+                            <input id="DESC_METODO" class="form-control col-md-7 col-xs-6" name="DESC_METODO"  readonly="readonly">
+                        </div> 
 
                         <label class="control-label col-md-1 col-sm-1 col-xs-1" for="COD_DIRECCION">Direccion:
                         </label>
@@ -95,16 +117,22 @@
 
                     </div>
                     <div class="row item form-group">                      
-                        <label class="control-label col-md-1 col-sm-1 col-xs-4" for="TIP_CAMBIO">Tip.&nbsp;Cambio:
+                        <!--<label class="control-label col-md-1 col-sm-1 col-xs-4" for="TIP_CAMBIO">Tip.&nbsp;Cambio:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-8">
                             &nbsp;
                         </div>
                         <div class="col-md-2 col-sm-2 col-xs-8">
-                            <input id="TIP_CAMBIO" class="form-control col-md-7 col-xs-12" name="TIP_CAMBIO"   type="number" required="required">
+                            <input id="TIP_CAMBIO" class="form-control col-md-7 col-xs-12 gs" name="TIP_CAMBIO"   type="number" required="required" readonly="readonly">
+                        </div>-->
+                        <label class="control-label col-md-1 col-sm-1 col-xs-4" for="OBSERVACION">Obs:
+                        </label>
+                        <div class="col-md-3 col-sm-3 col-xs-8">
+                            <textarea id="OBSERVACION" class="form-control" name="OBSERVACION" data-parsley-trigger="keyup" data-parsley-maxlength="800" ></textarea>
                         </div>
 
-                        <label class="control-label col-md-1 col-sm-1 col-xs-4" for="RUC">CI/RUC:
+
+                        <label class="control-label col-md-1 col-sm-1 col-xs-4" for="RUC">RUC/CI:
                         </label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
                             <input id="RUC" class="form-control col-md-7 col-xs-12" name="RUC"   type="text" required="required">
@@ -115,16 +143,17 @@
                             <input id="TEL_CLIENTE" class="form-control col-md-7 col-xs-12" name="TEL_CLIENTE"   type="text">
                         </div>
                     </div>
-                    <div class="row item form-group"> 
+
+                    <!--<div class="row item form-group"> 
                         <label class="control-label col-md-1 col-sm-1 col-xs-1" for="TIP_DOCUMENTO">Tip.&nbsp;doc:
                         </label>
                         <div id="divCondVen" class="col-md-1 col-sm-1 col-xs-2">
                             <input id="TIP_DOCUMENTO" class="form-control col-md-7 col-xs-4" name="TIP_DOCUMENTO"   type="text" required="required">
                         </div>
                         <div class="col-md-2 col-sm-2 col-xs-7">
-                            <input id="DESC_DOCUMENTO" class="form-control col-md-7 col-xs-6" name="DESC_DOCUMENTO"   type="number" readonly="readonly">
+                            <input id="DESC_DOCUMENTO" class="form-control col-md-7 col-xs-6" name="DESC_DOCUMENTO"   type="text" readonly="readonly">
                         </div>
-
+                                                                                                                                                                                                        
                         <label class="control-label col-md-1 col-sm-1 col-xs-1" for="COD_PROMOCION">Promoción:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-2">
@@ -133,7 +162,8 @@
                         <div class="col-md-2 col-sm-2 col-xs-7">
                             <input id="DESC_PROMOCION" class="form-control col-md-7 col-xs-6" name="DESC_PROMOCION"   type="number" readonly="readonly">
                         </div>
-                    </div>
+                    </div>-->
+
                     <br>
                     <!-- /CABECERA -->
                     <table class="table table-bordered table-hover table-striped table-responsive table-sm">
@@ -158,17 +188,18 @@
                                 <td><input id="DESC_ARTICULO_AGREGAR" class="form-control" type="text" readonly="readonly"/></td>
                                 <td><input id="COD_COLOR_AGREGAR" class="form-control" type="text"/></td>
                                 <td><input id="COD_TALLA_AGREGAR" class="form-control" type="text"/></td>
-                                <td><input id="PRECIO_UNITARIO_AGREGAR" class="form-control" type="text" readonly="readonly"/></td>
-                                <td><input id="CANTIDAD_AGREGAR" class="form-control" type="number" /></td>
+                                <td><input id="PRECIO_UNITARIO_AGREGAR" class="form-control gs" type="text" readonly="readonly"/></td>
+                                <td><input id="CANTIDAD_AGREGAR" class="form-control" type="number" min="1" max="999"/></td>
                                 <td><input id="TOTAL_IVA_AGREGAR" class="form-control gs" type="number" readonly="readonly"/></td>
                                 <td><input id="TOTAL_AGREGAR" class="form-control gs" type="number" readonly="readonly"/></td>
                                 <th>
                                     <div class="row">
                                         <div class="col-12 centrado">
-                                            <button type="button" class="btn btn-primary btn-sm"><i class="fa fa-arrow-down"></i></button>
+                                            <button id="BTN-AGREGAR" onclick="agregarDetalle()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-arrow-down"></i></button>
                                         </div>
                                     </div>
                                 </th>
+                                <td class="oculto"><input id="COD_UNIDAD_MEDIDA_AGREGAR" class="form-control" type="text"/></td>
                             </tr>
                         </tbody>
                     </table>
@@ -189,9 +220,9 @@
                                 <th class="centrado">OPCION</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="gs">1</td>
+                        <tbody id="tbody_detalle">
+                            <!--<tr>
+                                <td class="gs" id="orden1">1</td>
                                 <td>C10001</td>
                                 <td>CROCS BAND</td>
                                 <td>ROJO</td>
@@ -204,123 +235,85 @@
                                     <div class="row">
                                         <div class="col-12 centrado">
                                             <button type="button"  class="btn btn-success btn-sm"><i class="fa fa-edit"></i></button>
-                                            <button type="button"  class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
+                                            <button type="button"  class="btn btn-danger btn-sm" onclick="borrarDetalle($(this).parent().parent().parent().parent())"><i class="fa fa-trash"></i></button>
                                         </div>
                                     </div>
                                 </th>
-                            </tr>
-                            <tr>
-                                <td class="gs">2</td>
-                                <td>C10001</td>
-                                <td>CROCS BAND</td>
-                                <td>ROJO</td>
-                                <td>C10</td>
-                                <td class="gs">215000</td>
-                                <td class="gs">1</td>
-                                <td class="gs">19546</td>
-                                <td class="gs">234546</td>
-                                <th>
-                                    <div class="row">
-                                        <div class="col-12 centrado">
-                                            <button type="button"  class="btn btn-success btn-sm"><i class="fa fa-edit"></i></button>
-                                            <button type="button"  class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                </th>
-                            </tr>
+                            </tr>-->
+
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="5">Total</td>
-                                <td class="gs"></td>
-                                <td class="gs">1</td>
-                                <td class="gs">19546</td>
-                                <td class="gs">234546</td>
+                                <td colspan="6">Total</td>
+                                <td id="total_cantidad" class="gs"></td>
+                                <td id="total_iva" class="gs"></td>
+                                <td id="total_total" class="gs"></td>
                                 <td>&nbsp;</td>
                             </tr>
                         </tfoot>
                     </table>
-                    <!-- /DETALLE -->
-                    <!--<div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Name <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="name" class="form-control col-md-7 col-xs-12" data-validate-length-range="6" data-validate-words="2" name="name" placeholder="both name(s) e.g Jon Doe" required="required" type="text">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Email <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="email" id="email" name="email" required="required" class="form-control col-md-7 col-xs-12">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Confirm Email <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="email" id="email2" name="confirm_email" data-validate-linked="email" required="required" class="form-control col-md-7 col-xs-12">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="number">Number <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="number" id="number" name="number" required="required" data-validate-minmax="10,100" class="form-control col-md-7 col-xs-12">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="website">Website URL <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="url" id="website" name="website" required="required" placeholder="www.website.com" class="form-control col-md-7 col-xs-12">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="occupation">Occupation <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="occupation" type="text" name="occupation" data-validate-length-range="5,20" class="optional form-control col-md-7 col-xs-12">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label for="password" class="control-label col-md-3">Password</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="password" type="password" name="password" data-validate-length="6,8" class="form-control col-md-7 col-xs-12" required="required">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label for="password2" class="control-label col-md-3 col-sm-3 col-xs-12">Repeat Password</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="password2" type="password" name="password2" data-validate-linked="password" class="form-control col-md-7 col-xs-12" required="required">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">Telephone <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="tel" id="telephone" name="phone" required="required" data-validate-length-range="8,20" class="form-control col-md-7 col-xs-12">
-                        </div>
-                    </div>
-                    <div class="item form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="textarea">Textarea <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <textarea id="textarea" required="required" name="textarea" class="form-control col-md-7 col-xs-12"></textarea>
-                        </div>
-                    </div>
-                    <div class="ln_solid"></div>
-                    <div class="form-group">
-                        <div class="col-md-6 col-md-offset-3">
-                            <button type="submit" class="btn btn-primary">Cancel</button>
-                            <button id="send" type="submit" class="btn btn-success">Submit</button>
-                        </div>
-                    </div>-->
-
                 </form>
+                <form id="form-delivery">
+                    <div class="row item form-group">
+
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" style="margin-top: 0.7%;" for="COD_DELIVERY">Delivery:
+                        </label>
+                        <div class="col-md-3 col-sm-1 col-xs-2">
+                            <select id="COD_DELIVERY" class="form-control col-md-7 col-xs-4" name="COD_DELIVERY" tabindex="-1"> 
+                            </select>
+                        </div>
+                        <div id="div_delivery" class="col-md-2 col-sm-1 col-xs-2" style="border: 2px dashed;">
+                            <label class="control-label col-md-5" for="monto_delivery" style="margin-top: 4%;">Costo:
+                            </label>
+                            <div class="centrado col-md-7">
+                                <h4 id="monto_delivery" class="gs text-center">15000</h4>
+                            </div>
+                        </div>    
+
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="lead">Resumen</p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width:50%">Gravadas:</th>
+                                        <td class="gs" id="res_gravada">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Envio</th>
+                                        <td class="gs" id="res_envio">0</td>
+                                    </tr>
+                                    <tr >
+                                        <th>Subtotal:</th>
+                                        <td class="gs" id="res_subtotal">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>IVA:</th>
+                                        <td class="gs" id="res_iva">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total:</th>
+                                        <th class="gs" id="res_total">0</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="centrado">
+                    <button class="btn btn-default"> Cancelar </button>
+                    <button class="btn btn-primary" onclick="guardar()"> Guardar </button>
+                </div>
+
+
             </div>
         </div>
     </div>
 </div>
+<script src="js/sweetalert2.all.min.js" type="text/javascript"></script>
 <script src="js/SimpleTableCellEditor.js"></script>
 <script src="frm/pedidos/js/funciones.js" type="text/javascript"></script>

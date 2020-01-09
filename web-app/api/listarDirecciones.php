@@ -16,15 +16,15 @@
     }     
     if ($ok) {
         
-        $cod_moneda = NVL($_POST["COD_MONEDA"], "");
+        $cod_cliente = NVL($_GET["COD_CLIENTE"], "");
+        $cod_direccion = NVL($_POST["COD_DIRECCION"], "");
         $busqueda = NVL($_POST["buscar_texto"], "");
         $pag = NVL($_POST["pagina"], 1);
-        if ($cod_moneda==="" || $cod_moneda===null) {
+        if ($cod_direccion==="" || $cod_direccion===null) {
            //print("asdasd");
-           $datos = operacionesDB::ListarMonedas($cod_moneda, $busqueda, $pag); 
+           $datos = operacionesDB::ListarDirecciones($cod_cliente, $busqueda, $pag); 
         }else{
-           
-           $datos = operacionesDB::DatosMonedas($cod_moneda);
+           $datos = operacionesDB::DatosDireccion($cod_cliente, $cod_direccion);
         }
 
         $respuesta["acceso"] = true;

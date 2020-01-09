@@ -5,7 +5,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" 
                         aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModalLabel">Monedas</h4>
+                <h4 class="modal-title" id="gridSystemModalLabel">Clientes</h4>
             </div>
             <div class="modal-body">
                 
@@ -20,13 +20,12 @@
                             </div>
                             <div class="col col-md-10">
                                 <input id="buscar_texto" name="buscar_texto" type="text"
-                                       onkeyup="BuscarMonedasAjax()"
                                        class="form-control input-sm">
                             </div>
                             <div class="col col-md-1">
                                 <button id="boton-buscar" 
                                         type="button"
-                                        onclick="BuscarMonedasAjax()" 
+                                        onclick="listarTiposDocumentosAjax()" 
                                         class="btn btn-sm btn-primary">
                                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                                 </button>
@@ -36,12 +35,12 @@
                     <table id ="tbListarCondiciones" class="table table-bordered table-hover table-striped table-responsive cod">
                         <thead>
                             <tr>
-                                <th>Descripcion</th>
-                                <th>Codigo</th>
-                                <th>Tip. Cambio</th>
+                                <th>NOMBRE</th>
+                                <th>CODIGO</th>
+                                <th>RUC</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody_listar_monedas">
+                        <tbody id="tbody_listar">
 
                         </tbody>
                         <tfoot>
@@ -49,12 +48,12 @@
                                 <td colspan="7">
                                     <ul class="pager">
                                         <li>
-                                            <a href="#" onclick="anterior('BuscarMonedasAjax()')">
+                                            <a href="#" onclick="anterior('listarClientesAjax()')">
                                                 <span aria-hidden="true">&larr;</span> Anterior
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" onclick="siguiente('BuscarMonedasAjax()')">
+                                            <a href="#" onclick="siguiente('listarClientesAjax()')">
                                                 Siguiente <span aria-hidden="true">&rarr;</span>
                                             </a>
                                         </li>
@@ -71,7 +70,7 @@
 
 
                 <script>
-                    listarMonedasAjax();
+                    listarClientesAjax();
                     siguienteCampo('#buscar_texto', '#boton-buscar', false);
                 </script>
 

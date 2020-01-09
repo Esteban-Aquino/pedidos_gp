@@ -39,7 +39,7 @@ and open the template in the editor.
                 <div class="col-md-3 left_col menu_fixed">
                     <div class="left_col scroll-view">
                         <div class="navbar nav_title" style="border: 0;">
-                            <a href="principal.html" class="site_title centrado">
+                            <a onclick="cargar_formulario('frm/dashboard')" class="site_title centrado" style="cursor:pointer;">
                                 <img id="principal_ico" src="img/logo.ico" alt="">
                                 <!--<i class="fa fa-desktop"> </i>--> 
                                 <span>Guatapora S.A.</span>
@@ -71,7 +71,9 @@ and open the template in the editor.
 
                                     <li><a><i class="fa fa-pencil-square-o"></i> Movimientos <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
-                                            <li><a onclick="cargar_formulario('frm/pedidos')">Pedidos</a></li>
+                                            <li><a onclick="cargar_formulario('frm/pedidos')">Solicitud de Compra</a></li>
+                                            <li><a onclick="cargar_formulario('frm/lista_pedidos_emitidos')">Solicitudes Emitidas</a></li>
+                                            <li><a onclick="cargar_formulario('frm/consulta')">Consulta de Stock</a></li>
                                         </ul>
                                     </li>
 
@@ -119,18 +121,24 @@ and open the template in the editor.
                 <!-- /top navigation -->
 
                 <!-- CONTENIDO -->
-                
-                    <div class="right_col" role="main" ><!-- contenedor_main -->
-                        <div class="row tile_count">
-                            <div id="formulario">
 
-                            </div>
-                            <div id="buscado">
+                <div class="right_col" role="main" ><!-- contenedor_main -->
+                    
 
-                            </div>
+
+
+
+
+                    <div class="row tile_count">
+                        <div id="formulario">
+
+                        </div>
+                        <div id="buscado">
+
                         </div>
                     </div>
-                
+                </div>
+
 
                 <!-- FIN CONTENIDO -->
             </div>

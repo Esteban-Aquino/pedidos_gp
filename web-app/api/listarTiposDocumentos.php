@@ -15,18 +15,19 @@
         $ok = validarToken($token)['valid'];
     }     
     if ($ok) {
-        
-        $cod_moneda = NVL($_POST["COD_MONEDA"], "");
+
+        $COD_CONDICION_VENTA = NVL($_GET["COD_CONDICION_VENTA"], "");
+        $TIP_DOCUMENTO= NVL($_POST["TIP_DOCUMENTO"], "");
         $busqueda = NVL($_POST["buscar_texto"], "");
         $pag = NVL($_POST["pagina"], 1);
-        if ($cod_moneda==="" || $cod_moneda===null) {
-           //print("asdasd");
-           $datos = operacionesDB::ListarMonedas($cod_moneda, $busqueda, $pag); 
-        }else{
-           
-           $datos = operacionesDB::DatosMonedas($cod_moneda);
+        if ($TIP_DOCUMENTO === "" || $TIP_DOCUMENTO=== NULL){
+            //print_r('asd');
+            $datos = operacionesDB::ListarTiposDocumentos($COD_CONDICION_VENTA,$busqueda, $pag);
+        } else {
+            //print_r('QWE');
+            $datos = operacionesDB::DatosTiposDocumentos($COD_CONDICION_VENTA,$TIP_DOCUMENTO);
+            
         }
-
         $respuesta["acceso"] = true;
         $respuesta["datos"] = $datos;
         $respuesta["mensaje"] = '';

@@ -6,6 +6,19 @@ Rewriterule ^getdatoscliente$ getdatoscliente.php
 Rewriterule ^getCondicionVenta$ getCondicionVenta.php
 Rewriterule ^listarCondicionesVentas$ listarCondicionesVentas.php
 Rewriterule ^listarMonedas$ listarMonedas.php
+Rewriterule ^listarTiposDocumentos$ listarTiposDocumentos.php
+Rewriterule ^listarDirecciones$ listarDirecciones.php
+Rewriterule ^listarArticulos$ listarArticulos.php
+Rewriterule ^listarColoresTallas$ listarColoresTallas.php
+Rewriterule ^consultaExistencia$ consultaExistencia.php
+Rewriterule ^consultaPrecio$ consultaPrecio.php
+Rewriterule ^datosOferta$ datosOferta.php
+Rewriterule ^listarMetodosPago$ listarMetodosPago.php
+Rewriterule ^listarDelivery$ listarDelivery.php
+Rewriterule ^guardarCliente$ guardarCliente.php
+Rewriterule ^guardarPedido$ guardarPedido.php
+Rewriterule ^listarPedidos$ listarPedidos.php
+Rewriterule ^confirmarPedido$ confirmarPedido.php
 
 
 

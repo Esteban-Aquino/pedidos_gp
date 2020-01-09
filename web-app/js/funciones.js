@@ -10,6 +10,7 @@ function ajax(pDatosFormulario, pUrl, pBeforeSend, pSucces, pError, pComplete) {
     usr.token = sessionStorage.getItem('token');
     eval(pBeforeSend);
     $.ajax({
+        async: true,
         type: 'POST',
         url: pUrl,
         data: pDatosFormulario,
@@ -18,7 +19,7 @@ function ajax(pDatosFormulario, pUrl, pBeforeSend, pSucces, pError, pComplete) {
     }).done(function (json) {
         eval(pSucces);
     }).fail(function (e) {
-        eval(pSucces);
+        eval(pError);
     }).always(function (objeto, exito, error) {
         eval(pComplete);
     });
@@ -32,6 +33,7 @@ function ajaxGet(pUrl, pBeforeSend, pSucces, pError, pComplete) {
     //console.log(usr);
     eval(pBeforeSend);
     $.ajax({
+        async: true,
         type: 'GET',
         url: pUrl,
         dataType: 'json',
@@ -149,6 +151,25 @@ function estaSeguro(mensaje, accion, focusCampo) {
 
 }
 
+function estaSeguroSwal(mensaje, accion, focusCampo) {
+    Swal.fire({
+        title: 'Esta seguro/a?',
+        text: mensaje,
+        type: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.value) {
+            eval(accion);
+        }
+    });
+    $(focusCampo).focus();
+}
+
+
 function mostrar_foto($this) {
     //console.log($this.attr("src"));
     mostrar_imagen($this.attr("src"), "Imagen de Usuario");
@@ -210,6 +231,14 @@ function swalError(vtitulo, vtexto) {
     });
 }
 
+function swalCorrecto(vtitulo, vmensaje) {
+    Swal.fire({
+        type: 'success',
+        title: vtitulo,
+        text: vmensaje
+    });
+}
+
 function swalCerrar() {
     Swal.close();
 }
@@ -232,13 +261,52 @@ function cargar_formulario(frm) {
      $("#main_container").load(frm);
      $("#main_container").fadeIn(800, function () {});
      });*/
+
     clearInterval(this.interval);
     $("#busquedas").remove();
+
     $("#formulario").fadeOut(0, function () {
-        $.get(frm, function (htmlexterno) {
+        $.ajax({
+            async: true,
+            type: 'GET',
+            url: frm,
+            dataType: 'html'
+        }).done(function (htmlexterno) {
             $("#formulario").html(htmlexterno);
             $("#formulario").fadeIn(800, function () {});
+        }).fail(function (e) {
+            null;
+        }).always(function (objeto, exito, error) {
+            null;
         });
+
+        /*$.ajax({
+         async: true,
+         url: frm,
+         dataType: "html",
+         success: function (htmlexterno) {
+         $("#formulario").html(htmlexterno);
+         $("#formulario").fadeIn(800, function () {});
+         }
+         });*/
+
+
+        /*$.get(frm).done(
+         function (htmlexterno) {
+         $("#formulario").html(htmlexterno);
+         $("#formulario").fadeIn(800, function () {});
+         }
+         
+         ).fail(
+         function (xhr) {
+         null;
+         }
+         );*/
+
+        /*$.get(frm, function (htmlexterno) {
+         $("#formulario").html(htmlexterno);
+         $("#formulario").fadeIn(800, function () {});
+         });*/
     });
 
     /*
@@ -274,6 +342,12 @@ function formatoGs() {
         centsLimit: 0,
         allowNegative: true
     });
+}
+
+function sacarFormatoGs($nro) {
+    var vnro;
+    vnro = parseInt($nro.replace(',', '').replace('.', '').replace('.', ''));
+    return vnro;
 }
 
 function formatoNro() {
@@ -361,6 +435,7 @@ function cargar_busqueda(frm) {
 }
 
 function salir_busqueda() {
+    //console.log('Salir busqueda');
     $("#busquedas").fadeOut(500, function () {
         $("#busquedas").remove();
         $("#formulario").fadeIn(500, function () {
@@ -382,6 +457,7 @@ function ajaxValidarSession(pDatosFormulario, pUrl, pBeforeSend, pSucces, pError
     usr.token = sessionStorage.getItem('token');
     eval(pBeforeSend);
     $.ajax({
+        async: true,
         type: 'POST',
         url: pUrl,
         data: pDatosFormulario,

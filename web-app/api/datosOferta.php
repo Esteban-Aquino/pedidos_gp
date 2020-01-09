@@ -1,8 +1,7 @@
 <?php
 
     /**
-    * Lista condiciones de ventas
-    * Esteban Aquino 25-11-2019
+    * Esteban Aquino 
     */
     require_once '../config/operacionesDB.php';
     require_once 'sharedFunctions.php';
@@ -16,16 +15,10 @@
     }     
     if ($ok) {
         
-        $cod_moneda = NVL($_POST["COD_MONEDA"], "");
-        $busqueda = NVL($_POST["buscar_texto"], "");
-        $pag = NVL($_POST["pagina"], 1);
-        if ($cod_moneda==="" || $cod_moneda===null) {
-           //print("asdasd");
-           $datos = operacionesDB::ListarMonedas($cod_moneda, $busqueda, $pag); 
-        }else{
-           
-           $datos = operacionesDB::DatosMonedas($cod_moneda);
-        }
+        $cod_oferta = NVL($_GET["COD_OFERTA"], "");
+
+        $datos = operacionesDB::datosOferta($cod_oferta);
+        
 
         $respuesta["acceso"] = true;
         $respuesta["datos"] = $datos;

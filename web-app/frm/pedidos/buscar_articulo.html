@@ -6,7 +6,7 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <form id="form-buscar">
+                <form id="form-buscar" onsubmit="return false;">
                     <input type="hidden" id="pagina" name="pagina" value="1"/>
                     <div class="row">
                         <div class="col col-md-1">
@@ -14,21 +14,20 @@
                         </div>
                         <div class="col col-md-10">
                             <input id="buscar_texto" name="buscar_texto" type="text"
-                                   onkeyup="BuscarCobradorNombreAjax()"
                                    class="form-control input-sm">
                         </div>
                         <div class="col col-md-1">
                             <button id="boton-buscar" 
                                     type="button"
-                                    onclick="BuscarCobradorNombreAjax()" 
+                                    onclick="listarArticulosAjax()" 
                                     class="btn btn-sm btn-primary">
                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </div>
                     </div>
                 </form>
-                <div class="row">
-                    <div class="col-md-55">
+                <div id="divListarArticulos" class="row">
+                    <!--<div class="col-md-55">
                         <div class="thumbnail centrado">
                             <div class="image view view-first">
                                 <img style="width: 90%; display: block;" src="articulos/WET3149.jpg" alt="image" />
@@ -49,9 +48,22 @@
                                 <p id="DESC_ARTICULO_PRE">Champion super feo</p>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
+
+            <ul class="pager">
+                <li>
+                    <a href="#" onclick="anterior('BuscarClienteNombreAjax()')">
+                        <span aria-hidden="true">&larr;</span> Anterior
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="siguiente('BuscarClienteNombreAjax()')">
+                        Siguiente <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </li>
+            </ul>
             <div class="centrado">
                 <button onclick="salir_busqueda()" class="btn btn-primary btn-sm">
                     <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Salir
@@ -60,3 +72,13 @@
         </div>
     </div>
 </div>
+<script>
+    listarArticulosAjax();
+    $('#buscar_texto').on('keydown', function (event) { // funcion callback , anonima
+        //console.log(event.which);
+        if (event.which === 13) {
+            listarArticulosAjax();
+        }
+        ;
+    });
+</script>

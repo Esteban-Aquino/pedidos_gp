@@ -1,0 +1,91 @@
+<div id="divModal" class="modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" 
+                        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">Alta de clientes</h4>
+            </div>
+            <div class="modal-body">
+                
+                <form id="alta_cliente" class="form-horizontal form-label-left">
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_NOMBRE">Nombre:
+                        </label>
+                        <div class="col-md-9 col-sm-1 col-xs-2">
+                            <input id="ALTA_NOMBRE" class="form-control col-md-7 col-xs-4" name="ALTA_NOMBRE"   type="text" >
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_NOMBRE_FANTASIA">Nom.&nbsp;Fantasia:
+                        </label>
+                        <div class="col-md-9 col-sm-1 col-xs-2">
+                            <input id="ALTA_NOMBRE_FANTASIA" class="form-control col-md-7 col-xs-4" name="ALTA_NOMBRE_FANTASIA"   type="text" >
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_DIRECCION">Direccion:
+                        </label>
+                        <div class="col-md-9 col-sm-1 col-xs-2">
+                            <input id="ALTA_DIRECCION" class="form-control col-md-7 col-xs-4" name="ALTA_DIRECCION"   type="text" >
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_AREA1">Telefono&nbsp;1:
+                        </label>
+                        <div class="col-md-1 col-sm-1 col-xs-2">
+                            <input id="ALTA_AREA1" class="form-control col-md-7 col-xs-4" name="ALTA_AREA1"   type="text" >
+                        </div>
+                        <div class="col-md-3 col-sm-12 col-xs-2">
+                            <input id="NUMERO1" class="form-control col-md-7 col-xs-4" name="ALTA_NUMERO1"   type="text" >
+                        </div>
+                        
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="ALTA_AREA2">Telefono&nbsp;2:
+                        </label>
+                        <div class="col-md-1 col-sm-1 col-xs-2">
+                            <input id="ALTA_AREA2" class="form-control col-md-7 col-xs-4" name="ALTA_AREA2"   type="text" >
+                        </div>
+                        <div class="col-md-3 col-sm-12 col-xs-2">
+                            <input id="ALTA_NUMERO2" class="form-control col-md-7 col-xs-4" name="ALTA_NUMERO2"   type="text" >
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_RUC">RUC:
+                        </label>
+                        <div class="col-md-4 col-sm-1 col-xs-2">
+                            <input id="ALTA_RUC" class="form-control col-md-7 col-xs-4" name="ALTA_RUC"   type="text">
+                        </div>
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="ALTA_CI">CI:
+                        </label>
+                        <div class="col-md-4 col-sm-1 col-xs-2">
+                            <input id="ALTA_CI" class="form-control col-md-7 col-xs-4" name="ALTA_CI"   type="text">
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_FEC_NACIMIENTO">Fec.&nbsp;Nacimiento:
+                        </label>
+                        <div class="col-md-4 col-sm-1 col-xs-2">
+                            <input id="ALTA_FEC_NACIMIENTO" class="form-control col-md-7 col-xs-4" name="ALTA_FEC_NACIMIENTO"   type="date">
+                        </div>
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="ALTA_SEXO">Sexo:
+                        </label>
+                        <div class="col-md-4 col-sm-3 col-xs-10">
+                            <select id="ALTA_SEXO" class="select2_single form-control" tabindex="-1">
+                                <option value="F">Femenino</option>
+                                <option value="M">Masculino</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button id="botonCancelar" type="button" class="btn btn-default"
+                        data-dismiss="modal">Cancelar</button>
+                <button id="botonGuardar" type="button" class="btn btn-primary" onclick="guardarClienteAjax()"
+                        data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

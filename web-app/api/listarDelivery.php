@@ -1,7 +1,7 @@
 <?php
 
     /**
-    * Lista condiciones de ventas
+    * Lista Metodos de Pago
     * Esteban Aquino 25-11-2019
     */
     require_once '../config/operacionesDB.php';
@@ -15,18 +15,17 @@
         $ok = validarToken($token)['valid'];
     }     
     if ($ok) {
-        
-        $cod_moneda = NVL($_POST["COD_MONEDA"], "");
+        $COD_DELIVERY = NVL($_POST["COD_DELIVERY"], "");
         $busqueda = NVL($_POST["buscar_texto"], "");
         $pag = NVL($_POST["pagina"], 1);
-        if ($cod_moneda==="" || $cod_moneda===null) {
-           //print("asdasd");
-           $datos = operacionesDB::ListarMonedas($cod_moneda, $busqueda, $pag); 
-        }else{
-           
-           $datos = operacionesDB::DatosMonedas($cod_moneda);
+        if ($COD_DELIVERY === "" || $COD_DELIVERY=== NULL){
+            //print_r('asd');
+            $datos = operacionesDB::ListarDelivery($busqueda, $pag);
+        } else {
+            //print_r('QWE');
+            $datos = operacionesDB::DatosDelivery($COD_DELIVERY);
+            
         }
-
         $respuesta["acceso"] = true;
         $respuesta["datos"] = $datos;
         $respuesta["mensaje"] = '';

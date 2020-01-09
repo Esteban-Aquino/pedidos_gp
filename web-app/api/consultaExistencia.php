@@ -1,8 +1,8 @@
 <?php
 
     /**
-    * Lista condiciones de ventas
-    * Esteban Aquino 25-11-2019
+    * Lista colores
+    * Esteban Aquino 04-12-2019
     */
     require_once '../config/operacionesDB.php';
     require_once 'sharedFunctions.php';
@@ -16,16 +16,10 @@
     }     
     if ($ok) {
         
-        $cod_moneda = NVL($_POST["COD_MONEDA"], "");
-        $busqueda = NVL($_POST["buscar_texto"], "");
-        $pag = NVL($_POST["pagina"], 1);
-        if ($cod_moneda==="" || $cod_moneda===null) {
-           //print("asdasd");
-           $datos = operacionesDB::ListarMonedas($cod_moneda, $busqueda, $pag); 
-        }else{
-           
-           $datos = operacionesDB::DatosMonedas($cod_moneda);
-        }
+        $cod_articulo = NVL($_POST["articulo"], "");
+        
+        $datos = operacionesDB::consultaExistencia($cod_articulo); 
+        
 
         $respuesta["acceso"] = true;
         $respuesta["datos"] = $datos;
