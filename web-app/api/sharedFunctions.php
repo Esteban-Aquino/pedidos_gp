@@ -49,7 +49,7 @@ function generaToken($datos) {
  * @param Token y dato requerido
  * @return Dato del token o el token completo decodificado
  */
-function traeDatoToken($token){
+function traeDatoToken($token) {
     $decoded = '';
     $respuesta["valid"] = $valid;
     $respuesta["decoded"] = $decoded;
@@ -63,7 +63,15 @@ function traeDatoToken($token){
     $respuesta["valid"] = $valid;
     $respuesta["decoded"] = $decoded;
     $respuesta["message"] = $message;
-    
-    
+
+
     return $respuesta;
+}
+
+function formatea_respuesta($respuesta) {
+    return str_replace(')', '', str_replace('(', '', str_replace(']', '', str_replace('[', '', str_replace('"', '', $respuesta)
+                            )
+                    )
+            )
+    );
 }

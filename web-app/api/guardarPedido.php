@@ -24,13 +24,13 @@ if ($ok) {
     // GUARDAR CABECERA
 
     $datos = operacionesDB::insertaCabeceraPedido($cabecera);
-
+    $dsc = formatea_respuesta($datos);
     //print_r($datos);
 
     if (is_numeric($datos)) {
         $mens = 'OK';
     } ELSE {
-        $mens = $datos;
+        $mens = $dsc;
         $datos = 'ERROR';
     }
 
@@ -51,20 +51,25 @@ if ($ok) {
             }
             //print_r($detalle[$i]);
         }
+        $dsc = formatea_respuesta($datosDet);
     }
+    //print_r($datosDet);
+    
+    //print_r($dsc);
     if ($datosDet !== 'OK') {
-        $mens = $datosDet;
+        $mens = $dsc;
         $datos = 'ERROR';
     } ELSE {
         $mens = 'OK';
     }
-    
+    //print_r($mens);
     IF ($mens === 'OK') {
         $confirmado = operacionesDB::completaCarga($datos);
+        $dsc = formatea_respuesta($confirmado);
     }
     
     if ($confirmado !== 'OK') {
-        $mens = $confirmado;
+        $mens = $dsc;
         $datos = 'ERROR';
     } ELSE {
         $mens = 'OK';
@@ -73,7 +78,7 @@ if ($ok) {
     
     //print_r($mens);
     $respuesta["acceso"] = true;
-    $respuesta["datos"] = $datos;
+    $respuesta["datos"] = utf8_converter_sting($datos);
     $respuesta["mensaje"] = $mens;
     //print_r($respuesta);
 } else {

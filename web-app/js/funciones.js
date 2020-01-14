@@ -239,6 +239,17 @@ function swalCorrecto(vtitulo, vmensaje) {
     });
 }
 
+function swalCorrectoAccion(vtitulo, vmensaje, $action) {
+    Swal.fire({
+        type: 'success',
+        title: vtitulo,
+        text: vmensaje,
+        onClose: () => {
+            eval($action);
+        }
+    });
+}
+
 function swalCerrar() {
     Swal.close();
 }
@@ -261,7 +272,7 @@ function cargar_formulario(frm) {
      $("#main_container").load(frm);
      $("#main_container").fadeIn(800, function () {});
      });*/
-
+    validarSesion();
     clearInterval(this.interval);
     $("#busquedas").remove();
 

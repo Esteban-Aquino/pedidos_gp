@@ -1,13 +1,9 @@
 <?php
 
-    $persona = ['a'=>'1',
-                'b'=>'2'];
-    print_r($persona);
-    print '<br>';
-    print $persona['a'];
-    $persona['c'] = '3';
-    print '<br>';
-    print_r($persona);
-    print '<br>';
-    print $persona['c'];
-    
+    $nombre_fichero = '../articulos/11016_001.jpg';
+
+    if (file_exists($nombre_fichero)) {
+        echo "El fichero $nombre_fichero existe";
+    } else {
+        echo "El fichero $nombre_fichero no existe";
+    }

@@ -15,14 +15,20 @@
         $ok = validarToken($token)['valid'];
     }     
     if ($ok) {
-        $COD_PEDIDO = NVL($_POST["COD_PEDIDO"], "");
+        /*$COD_PEDIDO = NVL($_POST["COD_PEDIDO"], "");
         $COD_CALL = NVL($_GET["COD_CALL"], "");
         $USR_CALL = NVL($_GET["USR_CALL"], "");
         $busqueda = NVL($_POST["buscar_texto"], "");
+        $pag = NVL($_POST["pagina"], 1);*/
+        $COD_PEDIDO = NVL($_GET["COD_PEDIDO"], "");
+        $COD_CALL = NVL($_GET["COD_CALL"], "");
+        $USR_CALL = NVL($_GET["USR_CALL"], "");
+        $busqueda = NVL($_GET["buscar_texto"], "");
         $pag = NVL($_POST["pagina"], 1);
         if ($COD_PEDIDO === "" || $COD_PEDIDO=== NULL){
             //print_r('asd');
             $datos = operacionesDB::ListarPedidos($COD_CALL, $USR_CALL, $busqueda, $pag);
+            //print_r($datos);
         } else {
             //print_r('QWE');
             //$datos = operacionesDB::DatosDelivery($COD_DELIVERY);

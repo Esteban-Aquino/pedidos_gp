@@ -10,7 +10,7 @@ function inicializaPrincipal() {
     validarSesion();
     //cargar_formulario('frm/dashboard');
     cargar_formulario('frm/dashboard');
-    $('#nombre_usuario').text(datosUsuario('NOMBRE'));
+    $('#nombre_usuario').text(datosUsuario('USR_CALL'));
     $('#empresa_call').text(datosUsuario('NOM_CALL'));
     $('#log_out').on('click',function(){
         sessionStorage.removeItem('token');

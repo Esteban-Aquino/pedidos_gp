@@ -11,7 +11,7 @@ function inicializar() {
 }
 
 function datos_confirmar($this) {
-    console.log('Datos confirmar');
+    //console.log('Datos confirmar');
     //console.log($this.parent().parent().find('td'));
     //console.log($this.parent().parent().find('td').eq(11).text());
     var $usa_voucher = $this.parent().parent().find('td').eq(12).text();

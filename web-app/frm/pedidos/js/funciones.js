@@ -719,7 +719,7 @@ function listarArticulosAjaxSuccess(json) {
         datos += '<div class="col-md-55 sel-articulo" onclick="seleccionar_articulos($(this))">';
         datos += '     <div class="thumbnail centrado">';
         datos += '          <div class="image view view-first img-galeria">';
-        datos += '              <img style="width: 90%; display: block;" src="articulos/WET3149.jpg" alt="image" />';
+        datos += '              <img style="width: 90%; display: block;" src="'+value.IMAGEN+'" alt="image" />';
         datos += '           </div>';
         datos += '           <div class="caption">';
         datos += '                <p><b id="COD_ARTICULO_PRE">' + value.COD_ARTICULO + '</b></p>';
@@ -1174,6 +1174,8 @@ function GuardarPedido() {
      swalCerrar();
  }
 function GuardarPedidoAjaxSuccess(json) {
+    
+    //console.log(json);
     swalCerrar();
     tieneAcceso(json["acceso"]);
     var $solicitud = json["datos"];
@@ -1183,7 +1185,12 @@ function GuardarPedidoAjaxSuccess(json) {
         if (mensaje !== 'OK' ) {
             swalError('Error al guadar', mensaje);
         } else {
-            swalCorrecto("Guardado",'Numero Generado: '+$solicitud);
+            swalCorrectoAccion("Guardado",'Numero Generado: '+$solicitud, 'nuevo_registro()');
         }
     }
+    
+}
+
+function nuevo_registro(){
+    cargar_formulario('frm/pedidos');
 }

@@ -73,7 +73,7 @@ class operacionesDB {
         $sql = "UPDATE WEB_APP_USUARIOS U
                 SET U.COD_HASH = :token,
                     U.FEC_EMISION_HASH = SYSDATE,
-                    U.FEC_VENC_HASH = SYSDATE + (1/24*8)
+                    U.FEC_VENC_HASH = SYSDATE + (1/24*12)
                 WHERE UPPER(U.USR_CALL) = UPPER(:usr)";
         //print $sql;
         try {
@@ -136,6 +136,23 @@ class operacionesDB {
             }
         } catch (PDOException $e) {
             return false;
+        }
+    }
+
+    public static function buscaParametro($cod_modulo, $cod_parametro) {
+        try {
+
+            $sql = "begin :res := bs_busca_parametro(:cod_modulo, :cod_parametro); end;";
+
+            $comando = oraconnect::getInstance()->getDb()->prepare($sql);
+            $comando->bindParam(':res', $result, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT);
+            $comando->bindParam(':cod_modulo', $cod_modulo, PDO::PARAM_STR);
+            $comando->bindParam(':cod_parametro', $cod_parametro, PDO::PARAM_STR);
+            $comando->execute();
+
+            return $result;
+        } catch (PDOException $e) {
+            return $e->getMessage();
         }
     }
 
@@ -724,6 +741,8 @@ class operacionesDB {
      */
     public static function ListarArticulos($busqueda, $pag) {
         $cant = 20;
+        $cod_sucursal = operacionesDB::buscaParametro('VT', 'COD_SUCURSAL_WEB');
+        $cod_lista = operacionesDB::buscaParametro('VT', 'LISTA_PRECIO_WEB');
         try {
             $conn = null;
             $consulta = "select dsa.COD_ARTICULO, 
@@ -736,10 +755,12 @@ class operacionesDB {
                                         A.DESCRIPCION,
                                         R.COD_UNIDAD_REL COD_UNIDAD_MEDIDA,
                                         (E.EXISTENCIA * R.DIV / R.MULT) CANTIDAD,
-                                        E.EXISTENCIA CANTIDAD_UB
+                                        E.EXISTENCIA CANTIDAD_UB,
+                                        E.COD_COLOR
                                    FROM ST_ARTICULOS A
                                    JOIN (SELECT COD_EMPRESA,
                                                COD_ARTICULO,
+                                               COD_COLOR,
                                                SUM((CANTIDAD - CASE
                                                      WHEN RESERVADO < 0 THEN
                                                       0
@@ -747,8 +768,8 @@ class operacionesDB {
                                                       RESERVADO
                                                    END)) EXISTENCIA
                                           FROM ST_EXISTENCIA_RES
-                                         WHERE COD_SUCURSAL = '01'
-                                         GROUP BY COD_ARTICULO, COD_EMPRESA
+                                         WHERE COD_SUCURSAL = {$cod_sucursal}
+                                         GROUP BY COD_ARTICULO, COD_EMPRESA, COD_COLOR
                                         HAVING SUM((CANTIDAD -CASE
                                           WHEN RESERVADO < 0 THEN
                                            0
@@ -762,6 +783,22 @@ class operacionesDB {
                                     AND r.por_defecto = 'S'
                                   WHERE A.COD_RUBRO != '12'
                                     AND A.COD_ARTICULO NOT LIKE 'BOL0%'
+                                    AND (EXISTS (SELECT DISTINCT 'S'
+                                                FROM VT_PRECIOS_FIJOS F
+                                                WHERE A.COD_ARTICULO = F.COD_ARTICULO
+                                                AND F.COD_PRECIO_FIJO = {$cod_lista}
+                                                )
+                                         OR EXISTS (select DISTINCT 'S'
+                                                    from vt_ofertas_cab c, vt_ofertas_det d
+                                                   where c.cod_empresa = A.COD_EMPRESA
+                                                     and c.cod_empresa = d.cod_empresa
+                                                     and c.cod_oferta = d.cod_oferta
+                                                     and SYSDATE between c.fec_vigencia_ini and
+                                                         nvl(prorroga, fec_vigencia_fin)
+                                                     and d.cod_articulo = A.COD_ARTICULO
+                                                     and nvl(c.autorizado, 'N') = 'S'
+                                                     and (nvl(d.cod_color, 'XX') = NVL(E.COD_COLOR, 'ZZ') OR
+                                                         D.COD_COLOR IS NULL)))
                                     AND (A.COD_ARTICULO like '%' || upper(:busqueda) || '%' OR
                                         A.DESCRIPCION like '%' || upper(:busqueda1) || '%')
 
@@ -864,6 +901,7 @@ class operacionesDB {
      */
     public static function consultaExistencia($cod_articulo) {
         $cant = 10;
+        // 'articulos/WET3149.JPG' IMAGEN,
         try {
             $conn = null;
             $consulta = "SELECT A.COD_ARTICULO,
@@ -1238,20 +1276,20 @@ class operacionesDB {
             $comando = oraconnect::getInstance()->getDb()->prepare($consulta);
 
             // Ejecutar sentencia preparada
-            /*$comando->bindParam(':COD_CALL', $cod_call, PDO::PARAM_STR);
-            $comando->bindParam(':USR_CALL', $usr_call, PDO::PARAM_STR);
-            $comando->bindParam(':busqueda', $busqueda, PDO::PARAM_STR);
-            $comando->bindParam(':busqueda1', $busqueda, PDO::PARAM_STR);*/
+            /* $comando->bindParam(':COD_CALL', $cod_call, PDO::PARAM_STR);
+              $comando->bindParam(':USR_CALL', $usr_call, PDO::PARAM_STR);
+              $comando->bindParam(':busqueda', $busqueda, PDO::PARAM_STR);
+              $comando->bindParam(':busqueda1', $busqueda, PDO::PARAM_STR); */
             $comando->execute([':COD_CALL' => $cod_call,
-                               ':USR_CALL' => $usr_call/*,
-                               ':busqueda' => $busqueda,
-                               ':busqueda1' => $busqueda*/]);
+                ':USR_CALL' => $usr_call/* ,
+                      ':busqueda' => $busqueda,
+                      ':busqueda1' => $busqueda */]);
 
             $result = $comando->fetchAll(PDO::FETCH_ASSOC);
             //PRINT_R($result);
             return utf8_converter($result);
         } catch (PDOException $e) {
-          //print_r($e->getMessage());
+            //print_r($e->getMessage());
             return false;
         }
     }
@@ -1366,7 +1404,6 @@ class operacionesDB {
                                                               :PDESCUENTO,
                                                               :PPORC_DESCUENTO,
                                                               :PCOD_UNIDAD_MEDIDA,
-                                                              :PPORC_IVA,
                                                               :PDESC_ARTICULO,
                                                               :PCOD_COLOR,
                                                               :PCOD_TALLA,
@@ -1390,7 +1427,6 @@ class operacionesDB {
             $comando->bindParam(':PDESCUENTO', $pedidoDet['DESCUENTO'], PDO::PARAM_STR);
             $comando->bindParam(':PPORC_DESCUENTO', $pedidoDet['PORC_DESCUENTO'], PDO::PARAM_STR);
             $comando->bindParam(':PCOD_UNIDAD_MEDIDA', $pedidoDet['COD_UNIDAD_MEDIDA'], PDO::PARAM_STR);
-            $comando->bindParam(':PPORC_IVA', $pedidoDet['PORC_IVA'], PDO::PARAM_STR);
             $comando->bindParam(':PDESC_ARTICULO', $pedidoDet['DESC_ARTICULO'], PDO::PARAM_STR);
             $comando->bindParam(':PCOD_COLOR', $pedidoDet['COD_COLOR'], PDO::PARAM_STR);
             $comando->bindParam(':PCOD_TALLA', $pedidoDet['COD_TALLA'], PDO::PARAM_STR);
@@ -1425,8 +1461,8 @@ class operacionesDB {
             return $e->getMessage();
         }
     }
-    
-    public static function confirmaPedido($cod_pedido,$voucher) {
+
+    public static function confirmaPedido($cod_pedido, $voucher) {
         try {
 
             $sql = "begin :res := FWEB_APP_CONFIRMA_PEDIDO(:COD_PEDIDO, :VOUCHER); end;";
