@@ -1,0 +1,146 @@
+<!--
+/**
+ * Autor: Esteban Aqiono
+ * Fecha: 19-12-2019
+ * Descripcion: Pantalla de pedidos emitidos
+ */
+-->
+<link href="frm/consulta/css/estilos.css" rel="stylesheet" type="text/css"/>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Solicitudes Emitidas</h2>
+                <div class="clearfix"></div>
+            </div>
+            <!-- CABECERA -->
+            <div class="x_content">
+                <form id="form-buscar" action="javascript:void(0);">
+                    <input type="hidden" id="pagina" name="pagina" value="1"/>
+                    <div class="row">
+                        <div class="col col-md-1">
+                            <label class="form-control-static">Buscar</label>
+                        </div>
+                        <div class="col col-md-10">
+                            <input id="buscar_texto" name="buscar_texto" type="text"
+                                   onkeyup="listarPedidoAjax()"
+                                   class="form-control input-sm">
+                        </div>
+                        <div class="col col-md-1">
+                            <button id="boton-buscar" 
+                                    type="button"
+                                    onclick="listarPedidoAjax()" 
+                                    class="btn btn-sm btn-primary">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <table id ="tbListarCondiciones" class="table table-bordered table-hover table-striped table-responsive cod">
+                    <thead>
+                        <tr>
+                            <th>Nro</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Nombre</th>
+                            <th>Monto. Delivery</th>
+                            <th>Monto. Silicitud</th>
+                            <th>Total</th>
+                            <th>Voucher</th>
+                            <th>Tipo Pago</th>
+                            <th>Metodo Pago</th>
+                            <th>Delivery</th>
+                            <th>Estado</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_listar">
+                        <!--<tr>
+                            <td>1</td>
+                            <td>19/12/2019</td>
+                            <td>82246</td>
+                            <td>Carlos Esteban Aquino Fernandez</td>
+                            <td>10.000</td>
+                            <td>250.000</td>
+                            <td>260.000</td>
+                            <td>0000</td>
+                            <td>CREDITO</td>
+                            <td>FINANCIERA</td>
+                            <td>ENTREGAS YA</td>
+                            <td>Pendiente</td>
+                            <td>
+                                <button id="CONFIRMAR" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="datos_confirmar()"> 
+                                    <a class="fa fa-check" 
+                                       style="color: white;"></a> Confirmar 
+                                </button>
+                            </td>
+                        </tr> -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="13">
+                                <ul class="pager">
+                                    <li>
+                                        <a href="#" onclick="anterior('listarPedidoAjax()')">
+                                            <span aria-hidden="true">&larr;</span> Anterior
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="siguiente('listarPedidoAjax()')">
+                                            Siguiente <span aria-hidden="true">&rarr;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Confirmar -->
+<div class="modal fade" id="modal_confirmar" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Confirmar Solicitud</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form-confirmar" class="form-horizontal form-label-left">
+                    <!--<div class="row item form-group">
+                        <label class="control-label col-md-3 col-sm-1 col-xs-1" for="COD_DELIVERY">Delivery&nbsp;Asignado:
+                        </label>
+                        <div class="col-md-5 col-sm-1 col-xs-2">
+                            <select id="COD_DELIVERY" class="form-control col-md-7 col-xs-4" name="COD_DELIVERY" tabindex="-1"> 
+                            </select>
+                        </div>
+                        <div id="div_delivery" class="col-md-4 col-sm-1 col-xs-2 oculto" style="border: 2px dashed;">
+                            <label class="control-label col-md-5" for="monto_delivery">Costo:
+                            </label>
+                            <div class="centrado col-md-7">
+                                <h4 id="monto_delivery" class="gs text-center">15000</h4>
+                            </div>
+                        </div>    
+                    </div>-->
+                    <div class="row item form-group">
+                        <label class="control-label col-md-3 col-sm-1 col-xs-1" for="NRO_VOUCHER">Voucher:
+                        </label>
+                        <div class="col-md-9 col-sm-12 col-xs-2">
+                            <input id="CONF_NRO" class="form-control col-md-7 col-xs-4 oculto" name="CONF_NRO"   type="text" required="required">
+                            <input id="NRO_VOUCHER" class="form-control col-md-7 col-xs-4" name="NRO_VOUCHER"   type="text" required="required">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirma_pedido_voucher()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/sweetalert2.all.min.js" type="text/javascript"></script>
+<script src="frm/lista_pedidos_emitidos/js/funciones.js" type="text/javascript"></script>
