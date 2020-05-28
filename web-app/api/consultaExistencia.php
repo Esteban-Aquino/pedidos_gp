@@ -16,9 +16,11 @@
     }     
     if ($ok) {
         
-        $cod_articulo = NVL($_POST["articulo"], "");
+        $cod_articulo = NVL($_GET["COD_ARTICULO"], "");
+        $cod_color = NVL($_GET["COD_COLOR"], "");
+        $cod_talla = NVL($_GET["COD_TALLA"], "");
         
-        $datos = operacionesDB::consultaExistencia($cod_articulo); 
+        $datos = operacionesDB::consultaExistencia($cod_articulo,$cod_color,$cod_talla); 
         
 
         $respuesta["acceso"] = true;

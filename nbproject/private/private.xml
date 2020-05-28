@@ -3,8 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Ampps/www/guatapora/web-app/img/logo.png</file>
-            <file>file:/C:/Ampps/www/guatapora/web-app/css/estilos.css</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/api/guardarCliente.php</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/frm/pedidos/alta_cliente.html</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/frm/pedidos/buscar_direcciones.html</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/api/listarDirecciones.php</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/frm/pedidos/index.html</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/frm/pedidos/js/funciones.js</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/config/operacionesDB.php</file>
+            <file>file:/C:/Ampps/www/guatapora/web-app/api/getdatoscliente.php</file>
         </group>
     </open-files>
 </project-private>

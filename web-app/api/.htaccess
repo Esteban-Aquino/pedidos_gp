@@ -19,6 +19,9 @@ Rewriterule ^guardarCliente$ guardarCliente.php
 Rewriterule ^guardarPedido$ guardarPedido.php
 Rewriterule ^listarPedidos$ listarPedidos.php
 Rewriterule ^confirmarPedido$ confirmarPedido.php
-
+Rewriterule ^listarCiudadBarrio$ listarCiudadBarrio.php
+Rewriterule ^actualizaCliente$ actualizaCliente.php
+Rewriterule ^limiteDescuento$ limiteDescuento.php
+Rewriterule ^listarPerdidoCompletos$ listarPerdidoCompletos.php
 
 

@@ -250,6 +250,17 @@ function swalCorrectoAccion(vtitulo, vmensaje, $action) {
     });
 }
 
+function swalErrorAccion(vtitulo, vmensaje, $action) {
+    Swal.fire({
+        type: 'error',
+        title: vtitulo,
+        text: vmensaje,
+        onClose: () => {
+            eval($action);
+        }
+    });
+}
+
 function swalCerrar() {
     Swal.close();
 }
@@ -445,7 +456,29 @@ function cargar_busqueda(frm) {
     });
 }
 
+
 function salir_busqueda() {
+    //console.log('Salir busqueda');
+    $("#busquedas").fadeOut(500, function () {
+        $("#busquedas").remove();
+        $("#formulario").fadeIn(500, function () {
+            //$("#boton-buscar-usuario").focus();
+        });
+    });
+}
+
+function cargar_inframe(frm) {
+    "restrict mode";
+    $('#buscado').append('<div id="busquedas" class="oculto"></div>');
+    $("#busquedas").load(frm);
+    $("#formulario").fadeOut(500, function () {
+        $("#busquedas").fadeIn(500, function () { // callback - funcion anonima
+
+        });
+    });
+}
+
+function salir_inframe() {
     //console.log('Salir busqueda');
     $("#busquedas").fadeOut(500, function () {
         $("#busquedas").remove();
@@ -481,4 +514,15 @@ function ajaxValidarSession(pDatosFormulario, pUrl, pBeforeSend, pSucces, pError
     }).always(function (objeto, exito, error) {
         eval(pComplete);
     });
+}
+
+function soloNro(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        status = "solo nro";
+        return false;
+    }
+    status = "";
+    return true;
 }

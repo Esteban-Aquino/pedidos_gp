@@ -17,17 +17,18 @@ if ($token !== 'null' && $token !== null) {
 if ($ok) {
     $json_str = file_get_contents('php://input');
     $json_obj = json_decode(utf8_converter_sting($json_str), true);
-    $cabecera = $json_obj["CABECERA"];
-    $detalle = $json_obj["DETALLE"];
-    $totales = $json_obj["TOTALES"];
+    $cabecera = $json_obj["CLIENTE"];
+    $direcciones = $json_obj["DIRECCIONES"];
+    $telefonos = $json_obj["TELEFONOS"];
+    $documentos = $json_obj["DOCUMENTOS"];
 
     // GUARDAR CABECERA
-
-    $datos = operacionesDB::insertaCabeceraPedido($cabecera);
+    //print_r($cabecera);
+    $datos = operacionesDB::actualizaClienteCabecera($cabecera);
     $dsc = formatea_respuesta($datos);
     //print_r($datos);
 
-    if (is_numeric($datos)) {
+    if ($datos === 'OK') {
         $mens = 'OK';
     } ELSE {
         $mens = $dsc;
@@ -40,40 +41,78 @@ if ($ok) {
         // GUARDAR DETALLE
         // recorrer array
         //saco el numero de elementos
-        $longitud = count($detalle);
+        $longitud = count($direcciones);
         //Recorro todos los elementos
         for ($i = 0; $i < $longitud; $i++) {
-            //saco el valor de cada elemento
-            $detalle[$i]['NRO_SOLICUTUD'] = $datos;
-            $datosDet = operacionesDB::insertaDetallePedido($detalle[$i]);
-            if ($datosDet !== 'OK') {
+            $datosDir = operacionesDB::actualizaClienteDireccion($cabecera['COD_CLIENTE'], $direcciones[$i]);
+            if ($datosDir !== 'OK') {
                 break;
             }
             //print_r($detalle[$i]);
         }
-        $dsc = formatea_respuesta($datosDet);
+        $dsc = formatea_respuesta($datosDir);
     }
     //print_r($datosDet);
     
+    
     //print_r($dsc);
-    if ($datosDet !== 'OK') {
+    if ($datosDir !== 'OK') {
         $mens = $dsc;
         $datos = 'ERROR';
     } ELSE {
         $mens = 'OK';
-    }
-    //print_r($mens);
-    IF ($mens === 'OK') {
-        $confirmado = operacionesDB::completaCarga($datos);
-        $dsc = formatea_respuesta($confirmado);
     }
     
-    if ($confirmado !== 'OK') {
+    // TELEFONOS
+    if ($datos !== 'ERROR') {
+        //saco el numero de elementos
+        $longitud = count($telefonos);
+        //Recorro todos los elementos
+        for ($i = 0; $i < $longitud; $i++) {
+            $datosTelef = operacionesDB::actualizaClienteTelefono($cabecera, $telefonos[$i]);
+            if ($datosTelef !== 'OK') {
+                break;
+            }
+            //print_r($detalle[$i]);
+        }
+        $dsc = formatea_respuesta($datosTelef);
+    }
+    //print_r($datosDet);
+    
+    
+    //print_r($dsc);
+    if ($datosTelef !== 'OK') {
         $mens = $dsc;
         $datos = 'ERROR';
     } ELSE {
         $mens = 'OK';
     }
+    // DOCUMENTOS
+    if ($datos !== 'ERROR') {
+        //saco el numero de elementos
+        $longitud = count($documentos);
+        //Recorro todos los elementos
+        for ($i = 0; $i < $longitud; $i++) {
+            $datosDoc = operacionesDB::actualizaClienteDocumento($cabecera, $documentos[$i]);
+            if ($datosDoc !== 'OK') {
+                break;
+            }
+            //print_r($detalle[$i]);
+        }
+        $dsc = formatea_respuesta($datosDoc);
+    }
+    //print_r($datosDet);
+    
+    
+    //print_r($dsc);
+    if ($datosDoc !== 'OK') {
+        $mens = $dsc;
+        $datos = 'ERROR';
+    } ELSE {
+        $mens = 'OK';
+    }
+    
+
     
     
     //print_r($mens);

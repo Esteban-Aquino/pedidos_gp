@@ -16,16 +16,10 @@
     }     
     if ($ok) {
         
-        $cod_cliente = NVL($_GET["COD_CLIENTE"], "");
-        $cod_direccion = NVL($_POST["COD_DIRECCION"], "");
         $busqueda = NVL($_POST["buscar_texto"], "");
         $pag = NVL($_POST["pagina"], 1);
-        if ($cod_direccion==="" || $cod_direccion===null) {
-           //print("asdasd");
-           $datos = operacionesDB::ListarDirecciones($cod_cliente, $busqueda, $pag); 
-        }else{
-           $datos = operacionesDB::DatosDireccion($cod_cliente, $cod_direccion);
-        }
+        
+         $datos = operacionesDB::ListarCiudadesBarrios($busqueda, $pag); 
 
         $respuesta["acceso"] = true;
         $respuesta["datos"] = $datos;

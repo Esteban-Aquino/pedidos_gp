@@ -8,8 +8,8 @@
                 <h4 class="modal-title" id="gridSystemModalLabel">Alta de clientes</h4>
             </div>
             <div class="modal-body">
-                
-                <form id="alta_cliente" class="form-horizontal form-label-left">
+
+                <form id="alta_cliente" class="form-horizontal form-label-left" autocomplete="off">
                     <div class="row item form-group">
                         <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_NOMBRE">Nombre:
                         </label>
@@ -28,9 +28,29 @@
                         <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_DIRECCION">Direccion:
                         </label>
                         <div class="col-md-9 col-sm-1 col-xs-2">
-                            <input id="ALTA_DIRECCION" class="form-control col-md-7 col-xs-4" name="ALTA_DIRECCION"   type="text" >
+                            <input id="ALTA_DIRECCION" class="form-control col-md-7 col-xs-4" name="ALTA_DIRECCION" maxlength="160" type="text" >
                         </div>
                     </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="MOD_COD_DIRECCION">Ciudad:
+                        </label>
+                        <div class="col-md-1 col-sm-1 col-xs-2 oculto">
+                            <input id="ALTA_COD_CIUDAD" class="form-control col-md-7 col-xs-4 " name="ALTA_COD_CIUDAD"   type="text" readonly="readonly" >
+                        </div>
+                        <div class="col-md-4 col-sm-1 col-xs-2">
+                            <input id="ALTA_CIUDAD" class="form-control col-md-7 col-xs-4" name="ALTA_CIUDAD"   type="text" data-toggle="tooltip" title="Presione F9 para buscar">
+                        </div>
+
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="ALTA_COD_BARRIO">Barrio:
+                        </label>
+                        <div class="col-md-1 col-sm-1 col-xs-2 oculto">
+                            <input id="ALTA_COD_BARRIO" class="form-control col-md-7 col-xs-4 " name="ALTA_COD_BARRIO"   type="text" readonly="readonly" >
+                        </div>
+                        <div class="col-md-4 col-sm-1 col-xs-2">
+                            <input id="ALTA_BARRIO" class="form-control col-md-7 col-xs-4" name="ALTA_BARRIO"   type="text" data-toggle="tooltip" title="Presione F9 para buscar">
+                        </div>
+                    </div>
+
                     <div class="row item form-group">
                         <label class="control-label col-md-2 col-sm-1 col-xs-1" for="ALTA_AREA1">Telefono&nbsp;1:
                         </label>
@@ -40,7 +60,7 @@
                         <div class="col-md-3 col-sm-12 col-xs-2">
                             <input id="NUMERO1" class="form-control col-md-7 col-xs-4" name="ALTA_NUMERO1"   type="text" >
                         </div>
-                        
+
                         <label class="control-label col-md-1 col-sm-1 col-xs-1" for="ALTA_AREA2">Telefono&nbsp;2:
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-2">
@@ -78,14 +98,14 @@
                         </div>
                     </div>
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button id="botonCancelar" type="button" class="btn btn-default"
                         data-dismiss="modal">Cancelar</button>
-                <button id="botonGuardar" type="button" class="btn btn-primary" onclick="guardarClienteAjax()"
-                        data-dismiss="modal">Guardar</button>
+                <button id="botonGuardar" type="button" class="btn btn-primary" onclick="guardarCliente()">Guardar</button>
             </div>
         </div>
     </div>
 </div>
+
+<script src="frm/pedidos/js/funciones_alta_cliente.js" type="text/javascript"></script>

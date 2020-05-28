@@ -19,12 +19,12 @@ if ($token !== 'null' && $token !== null) {
 }
 if ($ok) {
 
-    /*$cod_articulo = NVL($_POST["COD_ARTICULO"], "");
-    $busqueda = NVL($_POST["buscar_texto"], "");
-    $pag = NVL($_POST["pagina"], 1);*/
     $cod_articulo = NVL($_GET["COD_ARTICULO"], "");
+    $busqueda = NVL($_POST["buscar_texto"], "");
+    $pag = NVL($_POST["pagina"], 1);
+    /*$cod_articulo = NVL($_GET["COD_ARTICULO"], "");
     $busqueda = NVL($_GET["buscar_texto"], "");
-    $pag = NVL($_GET["pagina"], 1);
+    $pag = NVL($_GET["pagina"], 1);*/
     
     if ($cod_articulo === "" || $cod_articulo === null) {
         //print("asdasd");
@@ -50,7 +50,7 @@ if ($ok) {
             }
         }
     } else {
-        //$datos = operacionesDB::DatosDireccion($cod_cliente, $cod_direccion);
+        $datos = operacionesDB::DatosArticulo($cod_articulo);
     }
 
     $respuesta["acceso"] = true;

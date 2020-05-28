@@ -5,12 +5,12 @@
  * Descripcion: Pantalla de pedidos emitidos
  */
 -->
-<link href="frm/consulta/css/estilos.css" rel="stylesheet" type="text/css"/>
+<link href="frm/reporte_pedidos_emitidos/css/estilos.css" rel="stylesheet" type="text/css"/>
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Solicitudes Emitidas</h2>
+                <h2>Detalle de Solicitudes</h2>
                 <div class="clearfix"></div>
             </div>
             <!-- CABECERA -->
@@ -19,14 +19,28 @@
                     <input type="hidden" id="pagina" name="pagina" value="1"/>
                     <div class="row">
                         <div class="col col-md-1">
-                            <label class="form-control-static">Buscar</label>
+                            <label class="form-control-static">Fec.&nbsp;Desde:</label>
                         </div>
-                        <div class="col col-md-10">
-                            <input id="buscar_texto" name="buscar_texto" type="text"
-                                   onkeyup="listarPedidoAjax()"
-                                   class="form-control input-sm">
+                        <div class="col col-md-4">
+                            <div class="input-group date dt" >
+                                <input type="text" class="form-control" id="fec_desde">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
                         </div>
                         <div class="col col-md-1">
+                            <label class="form-control-static">Fec.&nbsp;Hasta:</label>
+                        </div>
+                        <div class="col col-md-4">
+                            <div class="input-group date dt" >
+                                <input type="text" class="form-control" id="fec_hasta">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col col-md-2">
                             <button id="boton-buscar" 
                                     type="button"
                                     onclick="listarPedidoAjax()" 
@@ -142,5 +156,6 @@
         </div>
     </div>
 </div>
+<script src="vendors/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 <script src="js/sweetalert2.all.min.js" type="text/javascript"></script>
-<script src="frm/lista_pedidos_emitidos/js/funciones.js" type="text/javascript"></script>
+<script src="frm/reporte_pedidos_emitidos/js/funciones.js" type="text/javascript"></script>

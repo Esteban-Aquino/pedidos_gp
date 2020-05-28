@@ -1,0 +1,78 @@
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Actualizar Cliente</h2>
+                <div class="clearfix"></div>
+            </div>
+            <!-- CABECERA -->
+            <div class="x_content">
+
+
+                <form id="frm_mod_cliente" class="form-horizontal form-label-left" action="javascript:void(0);" autocomplete="off">
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="MOD_NOMBRE">Codigo:
+                        </label>
+                        <div class="col-md-2 col-sm-1 col-xs-2">
+                            <input id="MOD_COD_CLIENTE" class="form-control col-md-7 col-xs-4" name="MOD_COD_CLIENTE"   type="text" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="MOD_NOMBRE">Nombre:
+                        </label>
+                        <div class="col-md-9 col-sm-1 col-xs-2">
+                            <input id="MOD_NOMBRE" class="form-control col-md-7 col-xs-4" name="MOD_NOMBRE"   type="text" >
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="MOD_NOMBRE_FANTASIA">Nom.&nbsp;Fantasia:
+                        </label>
+                        <div class="col-md-9 col-sm-1 col-xs-2">
+                            <input id="MOD_NOMBRE_FANTASIA" class="form-control col-md-7 col-xs-4" name="MOD_NOMBRE_FANTASIA"   type="text" >
+                        </div>
+                    </div>
+                    <div class="row item form-group">
+                        <label class="control-label col-md-2 col-sm-1 col-xs-1" for="MOD_FEC_NACIMIENTO">Fec.&nbsp;Nacimiento:
+                        </label>
+                        <div class="col-md-4 col-sm-1 col-xs-2">
+                            <input id="MOD_FEC_NACIMIENTO" class="form-control col-md-7 col-xs-4" name="MOD_FEC_NACIMIENTO"   type="date">
+                        </div>
+                        <label class="control-label col-md-1 col-sm-1 col-xs-1" for="MOD_SEXO">Sexo:
+                        </label>
+                        <div class="col-md-4 col-sm-3 col-xs-10">
+                            <select id="MOD_SEXO" class="select2_single form-control" tabindex="-1">
+                                <option value="F">Femenino</option>
+                                <option value="M">Masculino</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div id="mod_direcciones" class="centrado">
+                        <h4>Direcciones <button class="btn btn-default" onclick="nuevaDireccion()"><i class="fa fa-plus-circle"></i></button></h4>
+                        <hr>
+                    </div>
+                    <br>
+                    <div id="mod_telefonos" class="centrado">
+                        <h4>Telefonos <button class="btn btn-default" onclick="nuevoTelefono()"><i class="fa fa-plus-circle"></i></button></h4>
+                        <hr>
+
+                    </div>
+                    <br>
+                    <div id="mod_documentos" class="centrado">
+                        <h4>Documentos <button class="btn btn-default" onclick="nuevoDocumento()"><i class="fa fa-plus-circle"></i></button></h4>
+                        <hr>
+                    </div>
+                </form>
+
+                <hr>
+                <div class="centrado">
+                    <button class="btn btn-default" onclick="salir_inframe()"> Cancelar </button>
+                    <button class="btn btn-primary" onclick="guardarModCliente()"> Guardar </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="js/sweetalert2.all.min.js" type="text/javascript"></script>
+<script src="frm/pedidos/js/funciones_modificar_cliente.js" type="text/javascript"></script>

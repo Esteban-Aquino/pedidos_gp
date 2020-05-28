@@ -69,3 +69,8 @@ tfoot>tr {
     height: 35px !important;
     cursor: pointer;
 }
+
+.centrar {
+    margin-left: 5%;
+}
+

@@ -8,6 +8,10 @@ function inicializar() {
     /*$('#COD_DELIVERY').on('change', function (event) { // funcion callback , anonima
      precioDeliveryAjax();
      });*/
+    
+    $('.dt').datetimepicker({
+        format: 'DD/MM/YYYY'
+    });
 }
 
 function datos_confirmar($this) {

@@ -1,11 +1,11 @@
-<div id="divModal" class="modal fade" tabindex="-1" role="dialog"
+<div id="divModalCiudadBarrio" class="modal fade" tabindex="-1" role="dialog"
      aria-labelledby="gridSystemModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" 
                         aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModalLabel">Direcciones</h4>
+                <h4 class="modal-title" id="gridSystemModalLabel">Ciudades / Barrios</h4>
             </div>
             <div class="modal-body">
                 
@@ -14,19 +14,20 @@
                 <div class="panel-body">
                     <form id="form-buscar">
                         <input type="hidden" id="pagina" name="pagina" value="1"/>
+                        <input type="hidden" id="nro_dir" name="nro_dir"/>
                         <div class="row">
                             <div class="col col-md-1">
                                 <label class="form-control-static">Buscar</label>
                             </div>
                             <div class="col col-md-10">
                                 <input id="buscar_texto" name="buscar_texto" type="text"
-                                       onkeyup="listarDireccionesAjax()"
+                                       onkeyup="listarCiudadBarrioAjax()"
                                        class="form-control input-sm">
                             </div>
                             <div class="col col-md-1">
                                 <button id="boton-buscar" 
                                         type="button"
-                                        onclick="listarDireccionesAjax()" 
+                                        onclick="listarCiudadBarrioAjax()" 
                                         class="btn btn-sm btn-primary">
                                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                                 </button>
@@ -36,9 +37,10 @@
                     <table id ="tbListar" class="table table-bordered table-hover table-striped table-responsive cod">
                         <thead>
                             <tr>
-                                <th>Descripcion</th>
-                                <th>Ciudad</th>
-                                <th>Codigo</th>
+                                <th>Cod. Ciudad</th>
+                                <th>Desc. Ciudad</th>
+                                <th>Cod. Barrio</th>
+                                <th>Desc. Barrio</th>
                             </tr>
                         </thead>
                         <tbody id="tbody_listar">
@@ -49,12 +51,12 @@
                                 <td colspan="7">
                                     <ul class="pager">
                                         <li>
-                                            <a href="#" onclick="anterior('listarDireccionesAjax()')">
+                                            <a href="#" onclick="anterior('listarCiudadBarrioAjax()')">
                                                 <span aria-hidden="true">&larr;</span> Anterior
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" onclick="siguiente('listarDireccionesAjax()')">
+                                            <a href="#" onclick="siguiente('listarCiudadBarrioAjax()')">
                                                 Siguiente <span aria-hidden="true">&rarr;</span>
                                             </a>
                                         </li>
@@ -65,13 +67,8 @@
                     </table>
                 </div>
 
-
-
-
-
-
                 <script>
-                    listarDireccionesAjax();
+                    listarCiudadBarrioAjax();
                     siguienteCampo('#buscar_texto', '#boton-buscar', false);
                 </script>
 

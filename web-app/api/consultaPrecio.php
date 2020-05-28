@@ -17,9 +17,11 @@
     if ($ok) {
         
         $cod_articulo = NVL($_GET["COD_ARTICULO_AGREGAR"], "");
+        $cod_color= NVL($_GET["COD_COLOR_AGREGAR"], "");
         $cod_unidad_medida= NVL($_GET["COD_UNIDAD_MEDIDA"], "");
+        $omitir_oferta= NVL($_GET["OMITIR_OFERTA"], "N");
         
-        $datos = operacionesDB::consultaPrecio($cod_articulo, $cod_unidad_medida);
+        $datos = operacionesDB::consultaPrecio($cod_articulo, $cod_color, $cod_unidad_medida,$omitir_oferta);
         
 
         $respuesta["acceso"] = true;

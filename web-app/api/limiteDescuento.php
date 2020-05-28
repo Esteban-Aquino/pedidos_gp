@@ -16,10 +16,10 @@
     }     
     if ($ok) {
         
-        $cod_articulo = NVL($_GET["COD_ARTICULO_AGREGAR"], "");
-        $cod_unidad_medida= NVL($_GET["COD_UNIDAD_MEDIDA"], "");
+        $cod_articulo = NVL($_GET["COD_ARTICULO"], "");
+        $porc= NVL($_GET["PORC_DESCUENTO"], "");
         
-        $datos = operacionesDB::consultaPrecio($cod_articulo, $cod_unidad_medida);
+        $datos = operacionesDB::consultaLimiteDescuento($cod_articulo, $porc);
         
 
         $respuesta["acceso"] = true;
