@@ -14,7 +14,7 @@ function inicializaPrincipal() {
     $('#empresa_call').text(datosUsuario('NOM_CALL'));
     $('#log_out').on('click',function(){
         sessionStorage.removeItem('token');
-        location.href = "index.html";
+        location.href = "home";
     });
 }
 

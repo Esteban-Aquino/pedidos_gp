@@ -1,5 +1,6 @@
 RewriteEngine on
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
-Rewriterule ^app$ app/index.php
+Rewriterule ^home$ principal.html
+Rewriterule ^login$ index.html
 

@@ -238,7 +238,7 @@ function nuevoDocumento() {
                         </label>
                         <div class="col-md-1 col-sm-1 col-xs-2">
                             <!--<input id="MOD_COD_IDENT` + vnro_doc + `" class="form-control col-md-7 col-xs-4" name="MOD_COD_IDENT` + vnro_doc + `"   type="text">-->
-                            <select id="MOD_COD_IDENT` + vnro_doc + `" class="form-control col-md-7 col-xs-4" name="MOD_COD_IDENT` + vnro_doc + `">
+                            <select id="MOD_COD_IDENT` + vnro_doc + `" class="form-control col-md-7 col-xs-4 docs" name="MOD_COD_IDENT` + vnro_doc + `">
                                 <option value="CI">CI</option> 
                                 <option value="RUC">RUC</option> 
                             </select>
@@ -249,6 +249,7 @@ function nuevoDocumento() {
                     </div>
                  </div>`;
     $('#mod_documentos').append(datos);
+    validaDocs();
 }
 
 

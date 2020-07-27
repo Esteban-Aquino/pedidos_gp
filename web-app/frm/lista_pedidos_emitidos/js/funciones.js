@@ -55,7 +55,7 @@ function listarPedidoAjax() {
 function listarPedidoAjaxSuccess(json) {
     tieneAcceso(json["acceso"]);
     var datos = "";
-    //console.log(json);
+    console.log(json);
     $datos = json["datos"];
     $.each($datos, function (key, value) {
         datos += `<tr>

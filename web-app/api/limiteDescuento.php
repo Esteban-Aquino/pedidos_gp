@@ -24,7 +24,7 @@
 
         $respuesta["acceso"] = true;
         $respuesta["datos"] = $datos;
-        $respuesta["mensaje"] = '';
+        $respuesta["mensaje"] = ' ';
     }else{
         $respuesta["acceso"] = false;
         $respuesta["mensaje"] = 'Token no valido';

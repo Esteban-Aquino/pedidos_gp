@@ -17,8 +17,8 @@
     if ($ok) {
         
         $cod_articulo = NVL($_GET["COD_ARTICULO"], "");
-        $cod_color = NVL($_GET["COD_COLOR"], "");
-        $cod_talla = NVL($_GET["COD_TALLA"], "");
+        $cod_color = NVL($_GET["COD_COLOR"], "N");
+        $cod_talla = NVL($_GET["COD_TALLA"], "N");
         
         $datos = operacionesDB::consultaExistencia($cod_articulo,$cod_color,$cod_talla); 
         

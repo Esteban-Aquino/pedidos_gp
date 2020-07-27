@@ -421,7 +421,7 @@ function validarSesion() {
     var token = sessionStorage.getItem("token");
     //console.log(usr);
     if (token === null || token === "") {
-        location.href = "index.html";
+        location.href = "login";
     } else {
         validarSesionAjax();
     }
@@ -441,7 +441,7 @@ function ValidarSesionAjaxSuccess(json) {
     //console.log(json.acceso);
     if (!json.acceso) {
         sessionStorage.removeItem('token');
-        location.href = "index.html";
+        location.href = "login";
     }
 }
 
@@ -492,7 +492,7 @@ function tieneAcceso(acceso) {
     if (!acceso) {
         // verificar si tiene session abierta
         sessionStorage.removeItem("token");
-        location.href = "index.html";
+        location.href = "login";
     }
 }
 
@@ -525,4 +525,20 @@ function soloNro(evt) {
     }
     status = "";
     return true;
+}
+
+function validaDocs() {
+        $('.docs').keyup(function () {
+            if (this.value !== '-') {
+                this.value = (this.value + '').replace(/[^0-9|-]/g, '');
+            }
+        });
+}
+
+function validaNro() {
+        $('.nro').keyup(function () {
+            if (this.value !== '-') {
+                this.value = (this.value + '').replace(/[^0-9|-]/g, '');
+            }
+        });
 }

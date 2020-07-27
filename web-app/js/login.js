@@ -10,7 +10,7 @@ function inicializaLogin() {
     //console.log(usr);
     if (token !== null && token !== "") {
         //console.log("nulo");
-        location.href = "principal.html";
+        location.href = "home";
     }
     //cerrarSessionAjax();
     $("#usuario").focus();
@@ -56,7 +56,7 @@ function ValidarAccesoAjaxSuccess(json) {
     if (json.acceso) {
         // guardar en storage
         sessionStorage.setItem("token", json.token);
-        location.href = "principal.html";
+        location.href = "home";
         console.log(datosUsuario());
     } else {
         sessionStorage.setItem("token", "");

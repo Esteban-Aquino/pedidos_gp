@@ -25,7 +25,8 @@ function inicializarAlta() {
         }
         ;
     });
-
+    validaDocs();
+    validaNro();
     siguienteCampo('#ALTA_NOMBRE', '#ALTA_NOMBRE_FANTASIA', false);
     siguienteCampo('#ALTA_NOMBRE_FANTASIA', '#ALTA_DIRECCION', false);
     siguienteCampo('#ALTA_DIRECCION', '#ALTA_AREA1', false);
@@ -70,7 +71,7 @@ function validarDatos() {
 function guardarClienteAjax() {
     //console.log('Buscando precio');
     var pDatosFormulario = $("#alta_cliente").serialize() + "&ALTA_SEXO=" + $('#ALTA_SEXO').val();
-    console.log(pDatosFormulario);
+    // console.log(pDatosFormulario);
     var pUrl = "api/guardarCliente";
     var pBeforeSend = "swalCargando('Guardando Cliente')";
     var pSucces = "guardarClienteAjaxSuccess(json)";

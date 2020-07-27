@@ -993,18 +993,22 @@ class operacionesDB {
     public static function consultaExistencia($cod_articulo, $cod_color, $cod_talla) {
         $cod_sucursal = operacionesDB::buscaParametro('VT', 'COD_SUCURSAL_WEB');
         $cod_lista = operacionesDB::buscaParametro('VT', 'LISTA_PRECIO_WEB');
+        //print_r( $cod_articulo.' '.$cod_color.' '.$cod_talla);
         try {
             $conn = null;
-            $consulta = "SELECT A.COD_ARTICULO,
+            $consulta = "SELECT E.COD_SUCURSAL,
+                                REPLACE(S.DESCRIPCION,' ','&nbsp')    DESC_SUCURSAL,
+                                A.COD_ARTICULO,
                                 A.DESCRIPCION,
                                 E.COD_COLOR,
+                                NVL(MC.DESC_INTERNO,COL.DESCRIPCION) DESC_COLOR,
                                 E.COD_TALLA,
                                 R.COD_UNIDAD_REL COD_UNIDAD_MEDIDA,
-
                                 SUM((E.EXISTENCIA * R.DIV / R.MULT)) CANTIDAD,
                                 SUM(E.EXISTENCIA) CANTIDAD_UB
                            FROM ST_ARTICULOS A
                            JOIN (SELECT COD_EMPRESA,
+                                        COD_SUCURSAL,
                                         COD_ARTICULO,
                                         COD_COLOR,
                                         COD_TALLA,
@@ -1015,8 +1019,12 @@ class operacionesDB {
                                                RESERVADO
                                             END)) EXISTENCIA
                                    FROM ST_EXISTENCIA_RES
-                                  WHERE COD_SUCURSAL = {$cod_sucursal}
-                                  GROUP BY COD_ARTICULO, COD_EMPRESA, COD_COLOR, COD_TALLA
+                                  WHERE COD_SUCURSAL = '{$cod_sucursal}'
+                                  GROUP BY COD_ARTICULO,
+                                           COD_EMPRESA,
+                                           COD_COLOR,
+                                           COD_TALLA,
+                                           COD_SUCURSAL
                                  HAVING SUM((CANTIDAD -CASE
                                    WHEN RESERVADO < 0 THEN
                                     0
@@ -1028,11 +1036,19 @@ class operacionesDB {
                            LEFT JOIN ST_RELACIONES R
                              ON A.COD_RELACION_UM = R.COD_RELACION_UM
                             AND r.por_defecto = 'S'
+                           JOIN SUCURSALES S
+                             ON S.COD_SUCURSAL = E.COD_SUCURSAL
+                           LEFT JOIN st_marca_color MC
+                             ON MC.COD_EMPRESA = A.COD_EMPRESA
+                             AND MC.COD_ARTICULO = A.COD_ARTICULO
+                             AND MC.COD_ORIGEN = E.COD_COLOR
+                           LEFT JOIN COLORES COL
+                           ON COL.COD_EMPRESA = A.COD_EMPRESA
+                           AND COL.COD_COLOR = E.COD_COLOR
                           WHERE (EXISTS (SELECT DISTINCT 'S'
                                            FROM VT_PRECIOS_FIJOS F
                                           WHERE A.COD_ARTICULO = F.COD_ARTICULO
-                                            AND F.COD_PRECIO_FIJO = {$cod_lista}
-                                         ) OR EXISTS
+                                            AND F.COD_PRECIO_FIJO = '{$cod_lista}') OR EXISTS
                                  (select DISTINCT 'S'
                                     from vt_ofertas_cab c, vt_ofertas_det d
                                    where c.cod_empresa = A.COD_EMPRESA
@@ -1045,13 +1061,16 @@ class operacionesDB {
                                      and (nvl(d.cod_color, 'XX') = NVL(E.COD_COLOR, 'ZZ') OR
                                          D.COD_COLOR IS NULL)))
                             AND A.COD_ARTICULO = :COD_ARTICULO
-                            AND E.COD_COLOR = :COD_COLOR
-                            AND E.COD_TALLA = :COD_TALLA
-                         GROUP BY A.COD_ARTICULO,
-                                A.DESCRIPCION,
-                                R.COD_UNIDAD_REL,
-                                E.COD_COLOR,
-                                E.COD_TALLA
+                            AND (E.COD_COLOR = :COD_COLOR or :COD_COLOR1 = 'N')
+                            AND (E.COD_TALLA = :COD_TALLA OR :COD_TALLA1 = 'N')
+                          GROUP BY A.COD_ARTICULO,
+                                   A.DESCRIPCION,
+                                   R.COD_UNIDAD_REL,
+                                   E.COD_COLOR,
+                                   E.COD_TALLA,
+                                   E.COD_SUCURSAL,
+                                   S.DESCRIPCION,
+                                   NVL(MC.DESC_INTERNO,COL.DESCRIPCION)
                          ";
             //print_r($consulta);     
             // Preparar sentencia
@@ -1060,13 +1079,15 @@ class operacionesDB {
             // Ejecutar sentencia preparada
             $comando->execute([':COD_ARTICULO' => $cod_articulo,
                                ':COD_COLOR' => $cod_color,
-                               ':COD_TALLA' => $cod_talla]);
+                               ':COD_COLOR1' => $cod_color,
+                               ':COD_TALLA' => $cod_talla,
+                               ':COD_TALLA1' => $cod_talla]);
 
             $result = $comando->fetchAll(PDO::FETCH_ASSOC);
 
             return utf8_converter($result);
         } catch (PDOException $e) {
-            //print_r($e->getMessage());
+            print_r($e->getMessage());
             return false;
         }
     }
@@ -1437,17 +1458,17 @@ class operacionesDB {
                                 V.COD_TALLA,
                                 V.CANTIDAD,
                                 V.MONTO_TOTAL,
+                                V.TOTAL_CON_IVA,
                                 V.ESTADO,
                                 V.COD_USUARIO,
                                 V.FECHA_DE_CARGA,
-                                V.COSTO_UNITARIO,
                                 V.COD_PEDIDO_WEB,
                                 V.COD_CALL,
                                 V.USR_CALL,
                                 V.DESC_CALL
                            FROM WEB_APPV_PEDIDOS_EMITIDOS V
-                          WHERE TRUNC(V.FEC_COMPROBANTE) >= TO_DATE('{$fec_des}','DD/MM/YYYY') 
-                            AND TRUNC(V.FEC_COMPROBANTE) <= TO_DATE('{$fec_has}','DD/MM/YYYY')
+                          WHERE TO_DATE(V.FEC_COMPROBANTE,'DD/MM/YYYY')  >= TO_DATE('{$fec_des}','DD/MM/YYYY') 
+                            AND TO_DATE(V.FEC_COMPROBANTE,'DD/MM/YYYY')  <= TO_DATE('{$fec_has}','DD/MM/YYYY')
                             AND V.COD_CALL = TO_NUMBER(:COD_CALL)";
 
             //print_r($fec_des);
@@ -1970,7 +1991,7 @@ class operacionesDB {
             $comando->execute();
             //var_dump($result);
             //$result = $comando->fetchAll(PDO::FETCH_ASSOC);
-            //print_r($result);
+            //print_r($cod_articulo);
             return utf8_converter_sting($result);
         } catch (PDOException $e) {
             //print_r($e->getMessage());

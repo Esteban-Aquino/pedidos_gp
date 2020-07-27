@@ -25,7 +25,7 @@ function inicializar() {
 function BuscarDatosArticulosAjax() {
     var pDatosFormulario = $("#consulta").serialize();
     //console.log(pDatosFormulario);
-    var pUrl = "api/consultaExistencia";
+    var pUrl = "api/consultaExistencia?COD_ARTICULO="+$('#articulo').val();
     var pBeforeSend = "";
     var pSucces = "BuscarDatosArticulosAjaxSuccess(json)";
     var pError = "ajax_error()";
@@ -36,17 +36,17 @@ function BuscarDatosArticulosAjax() {
 function BuscarDatosArticulosAjaxSuccess(json) {
     var datos = "";
     var img = "";
-    //console.log(json["datos"][0].DESCRIPCION);
+    //console.log(json);
     $('#cod_articulo').text(json["datos"][0].COD_ARTICULO);
     $('#desc_articulo').text(json["datos"][0].DESCRIPCION);
     $datos = json["datos"];
     $.each($datos, function (key, value) {
         datos += "<tr onclick='seleccionar_colores_tallas($(this))'>";
-        datos += "<td>" + value.SUCURSAL + "</td>";
+        datos += "<td>" + value.DESC_SUCURSAL + "</td>";
         datos += "<td>" + value.COD_COLOR + "</td>";
         datos += "<td>" + value.DESC_COLOR + "</td>";
         datos += "<td>" + value.COD_TALLA + "</td>";
-        datos += "<td>" + value.EXISTENCIA + "</td>";
+        datos += "<td>" + value.CANTIDAD + "</td>";
         datos += "</tr>";
         img = value.IMAGEN;
     });

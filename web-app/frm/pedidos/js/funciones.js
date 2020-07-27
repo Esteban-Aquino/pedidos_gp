@@ -185,6 +185,8 @@ function inicializar() {
         ValidarPorc();
     });
 
+    validaDocs();
+    
     $('#OMITIR_OFERTA').click();
     $('#CAMBIAR_NOMBRE').click();
     $('#DOCUMENTO').focus();
@@ -1363,9 +1365,11 @@ function BuscarLimiteDescuentoAjaxSucces(json) {
 
     if (!empty(json["datos"])) {
         var datos = json["datos"];
+        //console.log(json);
         vcant = parseInt(datos);
+        //console.log(datos);
         //console.log(parseInt(vcant)+' '+parseInt($('#PORC_DESCUENTO_AGREGAR').val()));
-        if (parseInt($('#PORC_DESCUENTO_AGREGAR').val()) !== vcant && parseInt($('#PORC_DESCUENTO_AGREGAR').val()) !== 0) {
+        if (parseInt($('#PORC_DESCUENTO_AGREGAR').val()) !== parseInt(vcant) && parseInt($('#PORC_DESCUENTO_AGREGAR').val()) !== 0) {
             $('#PORC_DESCUENTO_AGREGAR').val(0);
             calculos();
             swalError('', 'No puede usar este porcentaje, comuniquese con comercial');
